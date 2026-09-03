@@ -19,8 +19,10 @@
   --press: 0 1px 0 rgba(255, 253, 247, 0.6), 0 -0.5px 0 rgba(0, 0, 0, 0.045);
   --m: 20px;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
-  --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
-  --grot: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  /* next/font variables (P0.3) prepend the self-hosted face; prototype family names remain as fallbacks. */
+  --serif: var(--font-serif), "Source Serif 4", Georgia, "Times New Roman", serif;
+  --grot: var(--font-grot), "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --wordmark: var(--font-wordmark), "Space Grotesk", var(--grot);
 
   color-scheme: light;
   accent-color: var(--ink);
