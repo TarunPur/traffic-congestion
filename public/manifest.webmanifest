@@ -1,0 +1,19 @@
+{
+  "name": "Clearline",
+  "short_name": "Clearline",
+  "description": "Your commute, confirmed.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#efece2",
+  "theme_color": "#efece2",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

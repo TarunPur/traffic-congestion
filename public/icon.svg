@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#efece2"/>
+  <!-- the "clear line" — a rail running through the mark (brand §9) -->
+  <line x1="96" y1="256" x2="416" y2="256" stroke="#1b1a16" stroke-width="14"/>
+  <text x="256" y="256" font-family="Georgia, 'Times New Roman', serif" font-size="300"
+        font-weight="600" fill="#1b1a16" text-anchor="middle" dominant-baseline="central">C</text>
+</svg>

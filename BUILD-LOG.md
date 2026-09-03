@@ -31,3 +31,9 @@ Bound by ERD.md + the frozen docs. `../design/journey1-timetable/16screensjourne
 - `lib/fonts.ts` — `next/font/google` self-hosts Source Serif 4 (400/500/600 + italic), Archivo (400/500/600), Space Grotesk (wordmark only), each as a CSS variable; fetched + inlined at **build time**.
 - Layout applies `fontVariables` to `<html>`; globals feed `--font-serif`/`--font-grot` into `--serif`/`--grot` (prototype family names kept as fallbacks) + adds `--wordmark`.
 - **Verify:** served page has **0** `fonts.googleapis.com` runtime refs; fonts self-hosted as woff2 under `/_next/static/media/`; Source Serif 4 + Archivo + `--press` render correctly at 390px (screenshot sent). tsc clean. No high-stakes path.
+
+### P0.6 — App shell + PWA base ✅ (2026-09-04)
+- `components/app-shell.tsx` — real mobile shell (no 412×812 device frame): 100dvh flex column, content centred at `max-w-[480px]` on `--paper`, scroll region with the one 20px side margin, optional sticky `foot` (safe-area-inset padding) for the CTA/tab bar, + the design §5c paper-grain feTurbulence ground behind all content.
+- PWA: `public/manifest.webmanifest` (standalone, paper theme), `public/icon.svg` (brand "clear line" rail mark), `public/sw.js` (shell + font cache; **never** caches `/api/*` or transit times — honest offline is layered in P11.4), `components/service-worker-register.tsx` (prod-only registration). Manifest linked via layout metadata.
+- **TDD:** `tests/app-shell.test.tsx` (6) — children render, foot slot pinned outside scroll region, foot omitted when absent, centred max-width; manifest validity + icons.
+- **Verify:** 14/14 tests, tsc + lint clean; live at `/` — content stays centred at 480 on a 1456px viewport (no desktop stretch), grain + foot CTA correct, console clean. **Parked:** on-device install check → Tarun's phone (PARKED.md).
