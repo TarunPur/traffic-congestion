@@ -49,3 +49,9 @@ Bound by ERD.md + the frozen docs. `../design/journey1-timetable/16screensjourne
 - **Verify:** the exact CI sequence runs green locally (tsc, lint, 18 tests, `next build` ✓ 6 routes). **Parked:** GitHub remote + Vercel project + Preview URL → needs push approval (PARKED.md). No high-stakes path.
 
 **Phase 0 checkpoint:** rails complete (repo, tokens, fonts, shell/PWA, Supabase clients, CI) — themed, installable, tokens+fonts correct, Supabase clients wired (keys parked). ▶ Phase 1 next.
+
+## Phase 1 — Design system: primitives + the four signature components
+
+### P1.1 — Icon component ✅ (2026-09-04)
+- `components/icon.tsx` — typed `<Icon name size label>` porting all 25 `CL.icon()` paths verbatim (24 viewBox, stroke 1.6, round caps, currentColor). Decorative by default (aria-hidden), `role=img`+aria-label when `label` given. Static self-authored markup via dangerouslySetInnerHTML for exact fidelity.
+- **TDD:** `tests/icon.test.tsx` (5) — stroke spec, size grid, every icon has geometry, **no emoji/unicode** (ERD §2), a11y label. **Verify:** 23/23 tests, tsc + lint clean. Visual → in the P1.2 gallery screenshot.
