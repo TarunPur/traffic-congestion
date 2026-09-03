@@ -357,3 +357,144 @@
     }
   }
 }
+
+/**
+ * Split-flap (Solari) board (P1.3) — ported verbatim from clearline.css. The one treatment for a
+ * hero departure/arrival time. Paper2 tiles, serif digits, centre hinge, -90deg fold. Kept
+ * outside @layer so the @keyframes always applies.
+ */
+.flaps {
+  display: inline-flex;
+  gap: 4px;
+  align-items: stretch;
+}
+.flap {
+  position: relative;
+  width: 44px;
+  height: 62px;
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 49px;
+  line-height: 62px;
+  text-align: center;
+  color: var(--ink);
+  perspective: 230px;
+}
+.flap.colon {
+  width: 19px;
+  color: var(--grey);
+}
+.flap .card {
+  position: absolute;
+  inset: 0;
+  background: var(--paper2);
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ink) 13%, transparent), 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+.flap .half {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 31px;
+  overflow: hidden;
+}
+.flap .half span {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 62px;
+  line-height: 62px;
+}
+.flap .top {
+  top: 0;
+  border-radius: 4px 4px 0 0;
+}
+.flap .top span {
+  top: 0;
+}
+.flap .bot {
+  bottom: 0;
+  border-radius: 0 0 4px 4px;
+}
+.flap .bot span {
+  bottom: 0;
+}
+.flap .hinge {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 30px;
+  height: 2px;
+  background: color-mix(in srgb, var(--ink) 20%, transparent);
+  z-index: 5;
+}
+.flap .fold {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 31px;
+  transform-origin: bottom;
+  transform-style: preserve-3d;
+  z-index: 4;
+  background: var(--paper2);
+  border-radius: 4px 4px 0 0;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ink) 13%, transparent);
+}
+.flap .fold span {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 62px;
+  line-height: 62px;
+}
+.flap .fold.animate {
+  animation: foldDown 0.13s linear;
+}
+@keyframes foldDown {
+  from {
+    transform: rotateX(0deg);
+  }
+  to {
+    transform: rotateX(-90deg);
+  }
+}
+.flap.colon .card {
+  background: none;
+  box-shadow: none;
+}
+.flap.colon .hinge,
+.flap.colon .fold {
+  display: none;
+}
+/* compact variant for lists / countdowns */
+.flaps.sm .flap {
+  width: 33px;
+  height: 47px;
+  font-size: 37px;
+  line-height: 47px;
+  perspective: 170px;
+}
+.flaps.sm .flap.colon {
+  width: 15px;
+}
+.flaps.sm .flap .half {
+  height: 23.5px;
+}
+.flaps.sm .flap .half span {
+  height: 47px;
+  line-height: 47px;
+}
+.flaps.sm .flap .hinge {
+  top: 22.5px;
+}
+.flaps.sm .flap .fold {
+  height: 23.5px;
+}
+.flaps.sm .flap .fold span {
+  height: 47px;
+  line-height: 47px;
+}

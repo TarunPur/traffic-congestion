@@ -60,3 +60,8 @@ Bound by ERD.md + the frozen docs. `../design/journey1-timetable/16screensjourne
 - Control CSS ported verbatim into `app/globals.css @layer components` (`.field/.seg/.filters/.rowline/.cta/.tabbar/.lab` + reduced-motion settle + oxblood errored field). React wrappers in `components/controls.tsx`: `Cta` (default/ghost/disabled/loading+aria-busy), `Segmented`, `FilterTabs` (aria-pressed, matches prototype — not a false tablist), `TextField` (label/prefix/icon/clear/error), `SelectableRow` (option|radio, ink rule + tick), `RuledRows`, `TabBar` (aria-current, ink indicator).
 - **TDD:** `tests/controls.test.tsx` (12) — every state + interaction. Fixed a real port detail: Icon size widened to `number` (prototype tab bar uses 22).
 - **Verify:** 35/35 tests, tsc + lint clean (0 warnings); gallery `/dev/controls` matches prototype at 440px (segmented, filter underline, oxblood error field, selected row, CTA states, tab bar), console clean; screenshots sent.
+
+### P1.3 — SplitFlap (Solari board) 🎯 ✅ (2026-09-04)
+- `components/split-flap.tsx` — React structure + imperative flip ported from `CL.splitflap`/`buildFlaps`/`flipTo`: paper2 tiles, serif digits, centre hinge, `-90deg` fold `.13s` step, flips on mount + change, plain-glyph colon, hero 44×62 / compact 33×47. Reduced-motion sets final with no animation. CSS ported verbatim into globals (kept outside @layer for the `@keyframes foldDown`). Reusable `lib/use-reduced-motion.ts`.
+- **TDD:** `tests/split-flap.test.tsx` (6) — cell count/colon, aria-label, reduced-motion settle (no animate class), value change, compact modifier, animated path settles under fake timers.
+- **Verify:** 41/41 tests, tsc + lint clean; `/dev/signatures` shows the board flipping (captured mid-flip), console clean; screenshot sent.
