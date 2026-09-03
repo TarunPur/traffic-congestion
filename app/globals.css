@@ -1,20 +1,52 @@
-/* P0.1 — minimal themed ground. Full token set lands in P0.2. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/**
+ * Clearline tokens (ERD §2, ported from the frozen prototype clearline.css :root).
+ * lib/tokens.ts mirrors these for JS; tests/tokens.test.ts guards both against drift.
+ * The retuned two-grey set (--grey #5f5a4e / --grey2 #877f6e) is authoritative (ERD §2).
+ */
 :root {
   --paper: #efece2;
+  --paper2: #f4efe1;
   --ink: #1b1a16;
+  --grey: #5f5a4e; /* tier 2 — commute detail (darker) */
+  --grey2: #877f6e; /* tier 3 — metadata / source */
+  --hair: color-mix(in srgb, var(--ink) 20%, transparent);
+  --accent: #8f342a; /* oxblood — risk-only, wins any clash */
+  --accent-tint: color-mix(in srgb, var(--accent) 10%, transparent);
+  --press: 0 1px 0 rgba(255, 253, 247, 0.6), 0 -0.5px 0 rgba(0, 0, 0, 0.045);
+  --m: 20px;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --grot: "Archivo", "Helvetica Neue", Arial, sans-serif;
+
+  color-scheme: light;
+  accent-color: var(--ink);
 }
 
-html,
-body {
-  margin: 0;
-  padding: 0;
-  background: var(--paper);
-  color: var(--ink);
-  -webkit-font-smoothing: antialiased;
-}
+@layer base {
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--grot);
+    /* Timetable apparatus is numerically exact everywhere. */
+    font-variant-numeric: tabular-nums lining-nums;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+  /* Theme selection, caret and focus from ink — never browser defaults (ERD §2 / design §4). */
+  ::selection {
+    background: color-mix(in srgb, var(--ink) 18%, transparent);
+  }
+
+  :focus-visible {
+    outline: 1.5px solid var(--ink);
+    outline-offset: 3px;
+  }
 }
