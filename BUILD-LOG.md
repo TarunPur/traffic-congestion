@@ -43,3 +43,9 @@ Bound by ERD.md + the frozen docs. `../design/journey1-timetable/16screensjourne
 - **TDD:** `tests/env.test.ts` (4) — serverEnv throws in browser, returns on server, publicEnv has no secret fields, credentials-parked detection.
 - **🔒 security-review:** zero high-severity — service-role key absent from `.next/static` (build grep), `.env.local` untracked, anon-in-client safe by design; low-sev health-route error text flagged for P11.5. Pass recorded via security-gate hook.
 - **Verify:** 18/18 tests, tsc + lint clean, `pnpm build` clean. **Parked:** real anon/service keys + live DB read → arrives with Tarun's keys (PARKED.md).
+
+### P0.5 — CI ✅ (2026-09-04, Vercel half parked)
+- `.github/workflows/ci.yml` — on PR/push to main: pnpm install (frozen), typecheck, lint (no-explicit-any:error), test, build (placeholder public env). Node 22 / pnpm 9.
+- **Verify:** the exact CI sequence runs green locally (tsc, lint, 18 tests, `next build` ✓ 6 routes). **Parked:** GitHub remote + Vercel project + Preview URL → needs push approval (PARKED.md). No high-stakes path.
+
+**Phase 0 checkpoint:** rails complete (repo, tokens, fonts, shell/PWA, Supabase clients, CI) — themed, installable, tokens+fonts correct, Supabase clients wired (keys parked). ▶ Phase 1 next.
