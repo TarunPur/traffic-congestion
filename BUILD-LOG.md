@@ -55,3 +55,8 @@ Bound by ERD.md + the frozen docs. `../design/journey1-timetable/16screensjourne
 ### P1.1 — Icon component ✅ (2026-09-04)
 - `components/icon.tsx` — typed `<Icon name size label>` porting all 25 `CL.icon()` paths verbatim (24 viewBox, stroke 1.6, round caps, currentColor). Decorative by default (aria-hidden), `role=img`+aria-label when `label` given. Static self-authored markup via dangerouslySetInnerHTML for exact fidelity.
 - **TDD:** `tests/icon.test.tsx` (5) — stroke spec, size grid, every icon has geometry, **no emoji/unicode** (ERD §2), a11y label. **Verify:** 23/23 tests, tsc + lint clean. Visual → in the P1.2 gallery screenshot.
+
+### P1.2 — Core controls ✅ (2026-09-04)
+- Control CSS ported verbatim into `app/globals.css @layer components` (`.field/.seg/.filters/.rowline/.cta/.tabbar/.lab` + reduced-motion settle + oxblood errored field). React wrappers in `components/controls.tsx`: `Cta` (default/ghost/disabled/loading+aria-busy), `Segmented`, `FilterTabs` (aria-pressed, matches prototype — not a false tablist), `TextField` (label/prefix/icon/clear/error), `SelectableRow` (option|radio, ink rule + tick), `RuledRows`, `TabBar` (aria-current, ink indicator).
+- **TDD:** `tests/controls.test.tsx` (12) — every state + interaction. Fixed a real port detail: Icon size widened to `number` (prototype tab bar uses 22).
+- **Verify:** 35/35 tests, tsc + lint clean (0 warnings); gallery `/dev/controls` matches prototype at 440px (segmented, filter underline, oxblood error field, selected row, CTA states, tab bar), console clean; screenshots sent.

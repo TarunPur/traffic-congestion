@@ -52,3 +52,308 @@
     outline-offset: 3px;
   }
 }
+
+/**
+ * Core controls (P1.2) — ported VERBATIM from the frozen prototype clearline.css so every
+ * state (default / active / focus / disabled / selected / pressed) matches exactly. React
+ * components in components/controls.tsx are thin wrappers over these classes. Do not restyle.
+ */
+@layer components {
+  .lab {
+    font-family: var(--grot);
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.17em;
+    text-transform: uppercase;
+    color: var(--grey);
+  }
+
+  /* text field */
+  .field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: none;
+    border: 0;
+    border-bottom: 1.5px solid var(--hair);
+    border-radius: 0;
+    padding: 0 2px 0 0;
+    height: 50px;
+    margin-top: 10px;
+    transition: border-color 0.18s;
+  }
+  .field:focus-within {
+    border-bottom-color: var(--ink);
+  }
+  .field svg {
+    color: var(--grey);
+    flex: none;
+  }
+  .field input {
+    all: unset;
+    flex: 1;
+    font-family: var(--grot);
+    font-size: 15px;
+    color: var(--ink);
+    caret-color: var(--ink);
+    min-width: 0;
+  }
+  .field input::placeholder {
+    color: var(--grey2);
+  }
+  .field .prefix {
+    font-family: var(--grot);
+    font-size: 15px;
+    color: var(--grey);
+    padding-right: 2px;
+    border-right: 1px solid var(--hair);
+    margin-right: 2px;
+    line-height: 1;
+  }
+  .field .clear {
+    all: unset;
+    cursor: pointer;
+    color: var(--grey2);
+    display: inline-flex;
+  }
+  /* errored field (oxblood, risk-only — ERD §1) */
+  .field[data-error="true"] {
+    border-bottom-color: var(--accent);
+    background: var(--accent-tint);
+  }
+
+  /* segmented */
+  .seg {
+    display: inline-flex;
+    border: 1px solid var(--ink);
+  }
+  .seg button {
+    all: unset;
+    cursor: pointer;
+    font-family: var(--grot);
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    padding: 5px 10px 4px;
+    color: var(--grey);
+    transition: background 0.16s, color 0.16s;
+  }
+  .seg button + button {
+    border-left: 1px solid var(--ink);
+  }
+  .seg button[aria-pressed="true"] {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .seg button:active {
+    opacity: 0.65;
+  }
+
+  /* filter tabs */
+  .filters {
+    display: flex;
+    gap: 22px;
+  }
+  .filters button {
+    all: unset;
+    cursor: pointer;
+    font-family: var(--grot);
+    font-size: 11.5px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: var(--grey);
+    padding-bottom: 5px;
+    border-bottom: 2px solid transparent;
+    transition: color 0.18s, border-color 0.18s;
+  }
+  .filters button[aria-pressed="true"] {
+    color: var(--ink);
+    border-bottom-color: var(--ink);
+  }
+  .filters button:hover:not([aria-pressed="true"]) {
+    color: var(--ink);
+  }
+  .filters button:active {
+    opacity: 0.65;
+  }
+
+  /* result / selectable ruled rows */
+  .rows {
+    position: relative;
+    margin-top: 14px;
+  }
+  .rowline {
+    all: unset;
+    cursor: pointer;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 30px 1fr auto;
+    column-gap: 12px;
+    align-items: center;
+    padding: 15px 0;
+    border-top: 1px solid var(--hair);
+    position: relative;
+  }
+  .rowline:last-child {
+    border-bottom: 1px solid var(--hair);
+  }
+  .rowline .ic {
+    color: var(--grey2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 2px;
+  }
+  .rowline .lines {
+    min-width: 0;
+  }
+  .rowline .nm {
+    display: block;
+    font-family: var(--serif);
+    font-size: 15.5px;
+    font-weight: 500;
+    line-height: 1.25;
+  }
+  .rowline .sub {
+    display: block;
+    font-family: var(--grot);
+    font-size: 11.5px;
+    color: var(--grey);
+    margin-top: 3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .rowline .tick {
+    color: var(--ink);
+    opacity: 0;
+    transform: scale(0.7);
+    transition: opacity 0.18s, transform 0.18s var(--ease);
+  }
+  .rowline[aria-selected="true"] {
+    box-shadow: inset 3px 0 0 var(--ink);
+    background: color-mix(in srgb, var(--ink) 4%, transparent);
+  }
+  .rowline[aria-selected="true"] .tick {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .rowline[aria-selected="true"] .nm {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .rowline[aria-selected="false"] .nm {
+    color: var(--grey);
+  }
+  .rowline[aria-selected="false"] .ic {
+    color: var(--grey2);
+  }
+  .rowline[aria-selected="true"] .ic {
+    color: var(--ink);
+  }
+  .rowline mark {
+    background: none;
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .rowline:active {
+    background: color-mix(in srgb, var(--ink) 6%, transparent);
+  }
+
+  /* primary CTA (full-bleed ink bar, pinned in the foot) */
+  .cta {
+    all: unset;
+    cursor: pointer;
+    display: block;
+    width: 100%;
+    height: 54px;
+    text-align: center;
+    background: var(--ink);
+    color: var(--paper);
+    line-height: 54px;
+    font-family: var(--grot);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.055em;
+    text-transform: uppercase;
+    transition: opacity 0.16s, transform 0.16s var(--ease);
+  }
+  .cta:active {
+    opacity: 0.85;
+  }
+  .cta:not([disabled]):active {
+    transform: translateY(1px);
+  }
+  .cta[disabled] {
+    background: transparent;
+    color: color-mix(in srgb, var(--ink) 38%, var(--paper));
+    box-shadow: inset 0 0 0 1.5px var(--hair);
+    cursor: default;
+  }
+  .cta[disabled]:active {
+    transform: none;
+    opacity: 1;
+  }
+  .cta.ghost {
+    background: none;
+    color: var(--ink);
+    box-shadow: inset 0 1px 0 var(--hair);
+  }
+  .cta[data-loading="true"] {
+    cursor: default;
+    opacity: 0.85;
+  }
+
+  .foot .cap {
+    font-family: var(--grot);
+    font-size: 9.5px;
+    color: var(--grey2);
+    text-align: right;
+    padding: 11px var(--m);
+  }
+
+  /* bottom tab bar (Home · Plan · You) — J2/shell surfaces (design §11) */
+  .tabbar {
+    position: relative;
+    z-index: 1;
+    flex: none;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-top: 1px solid var(--hair);
+    background: var(--paper);
+  }
+  .tabbar button {
+    all: unset;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    padding: 11px 0 13px;
+    color: var(--grey2);
+    font-family: var(--grot);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .tabbar button[aria-current="true"] {
+    color: var(--ink);
+    box-shadow: inset 0 2px 0 var(--ink);
+  }
+  .tabbar button:active {
+    opacity: 0.6;
+  }
+
+  /* reduced motion — settle every control transition */
+  @media (prefers-reduced-motion: reduce) {
+    .field,
+    .seg button,
+    .filters button,
+    .rowline .tick,
+    .cta {
+      transition: none;
+    }
+  }
+}

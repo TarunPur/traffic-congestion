@@ -40,8 +40,8 @@ export const ICON_NAMES = Object.keys(PATHS) as IconName[];
 
 export interface IconProps {
   name: IconName;
-  /** 16 / 20 / 24 grid (design §6). Default 20. */
-  size?: 16 | 20 | 24;
+  /** Icon size in px. 16/20/24 is the design §6 grid; 22 is the ported tab-bar size. Default 20. */
+  size?: number;
   /** Accessible name. When omitted the icon is decorative (aria-hidden). */
   label?: string;
   className?: string;
