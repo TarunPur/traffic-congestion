@@ -1551,6 +1551,132 @@
     line-height: 1.6;
     margin-top: 12px;
   }
+
+  /* ── 16 You / Account (screen 16) — ported from 16-account.html ── */
+  .me {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 30px 0 24px;
+  }
+  .me .av {
+    flex: none;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    color: var(--grey);
+    box-shadow: inset 0 0 0 1.5px var(--hair);
+  }
+  .me .who .nm {
+    font-family: var(--serif);
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .me .who .sub {
+    font-family: var(--grot);
+    font-size: 12px;
+    color: var(--grey);
+    margin-top: 3px;
+    font-variant-numeric: tabular-nums;
+  }
+  .lab2 {
+    font-family: var(--grot);
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.17em;
+    text-transform: uppercase;
+    color: var(--grey);
+    display: block;
+    margin-top: 26px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--hair);
+  }
+  .recent .rr {
+    all: unset;
+    cursor: pointer;
+    display: grid;
+    grid-template-columns: 28px 1fr auto;
+    column-gap: 12px;
+    align-items: center;
+    min-height: 58px;
+    border-top: 1px solid var(--hair);
+  }
+  .recent .rr:first-child {
+    border-top: 0;
+  }
+  .recent .rr .ic {
+    color: var(--grey2);
+  }
+  .recent .rr .nm {
+    font-family: var(--serif);
+    font-size: 15px;
+    font-weight: 500;
+  }
+  .recent .rr .sub {
+    font-family: var(--grot);
+    font-size: 11px;
+    color: var(--grey);
+    margin-top: 2px;
+  }
+  .recent .rr .when {
+    font-family: var(--grot);
+    font-size: 10.5px;
+    color: var(--grey2);
+  }
+  .recent .rr:active {
+    background: color-mix(in srgb, var(--ink) 6%, transparent);
+  }
+  .more .mr {
+    all: unset;
+    cursor: pointer;
+    display: grid;
+    grid-template-columns: 26px 1fr auto;
+    column-gap: 14px;
+    align-items: center;
+    min-height: 56px;
+    border-top: 1px solid var(--hair);
+  }
+  .more .mr:first-child {
+    border-top: 0;
+  }
+  .more .mr .ic {
+    color: var(--grey);
+  }
+  .more .mr .nm {
+    font-family: var(--serif);
+    font-size: 15px;
+    font-weight: 500;
+  }
+  .more .mr .sub {
+    font-family: var(--grot);
+    font-size: 11px;
+    color: var(--grey2);
+    margin-top: 1px;
+  }
+  .more .mr .ch {
+    color: var(--grey2);
+  }
+  .more .mr:active {
+    background: color-mix(in srgb, var(--ink) 6%, transparent);
+  }
+  .signout {
+    all: unset;
+    cursor: pointer;
+    display: block;
+    text-align: center;
+    margin-top: 30px;
+    padding: 14px;
+    font-family: var(--grot);
+    font-size: 12.5px;
+    color: var(--grey);
+    letter-spacing: 0.02em;
+  }
+  .signout:active {
+    color: var(--ink);
+  }
 }
 
 /**
