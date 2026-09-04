@@ -30,6 +30,12 @@ export interface TripMapProps {
   zoom?: number;
   /** Interaction on/off (off for a static preview). */
   interactive?: boolean;
+  /** Make the origin/dest pins draggable (screen 06). */
+  draggable?: boolean;
+  onOriginMove?: (p: LngLat) => void;
+  onDestMove?: (p: LngLat) => void;
+  /** Auto fit/center the view to the markers. Off for draggable editing (avoids jumps). */
+  autoFit?: boolean;
   className?: string;
   style?: React.CSSProperties;
   ariaLabel?: string;
@@ -44,6 +50,10 @@ export function TripMap({
   center = DELHI,
   zoom = 11,
   interactive = true,
+  draggable = false,
+  onOriginMove,
+  onDestMove,
+  autoFit = true,
   className = "",
   style,
   ariaLabel = "Trip map",
@@ -53,6 +63,10 @@ export function TripMap({
   const originMarker = useRef<MlMarker | null>(null);
   const destMarker = useRef<MlMarker | null>(null);
   const routeReady = useRef(false);
+  const onOriginMoveRef = useRef(onOriginMove);
+  const onDestMoveRef = useRef(onDestMove);
+  onOriginMoveRef.current = onOriginMove;
+  onDestMoveRef.current = onDestMove;
 
   // Init the map once.
   useEffect(() => {
@@ -143,10 +157,13 @@ export function TripMap({
 
     if (origin) {
       if (originMarker.current) originMarker.current.setLngLat([origin.lng, origin.lat]);
-      else
-        originMarker.current = new maplibregl.Marker({ element: createMarkerElement("origin"), anchor: "center" })
+      else {
+        const m = new maplibregl.Marker({ element: createMarkerElement("origin"), anchor: "center", draggable })
           .setLngLat([origin.lng, origin.lat])
           .addTo(map);
+        if (draggable) m.on("dragend", () => onOriginMoveRef.current?.(m.getLngLat()));
+        originMarker.current = m;
+      }
     } else if (originMarker.current) {
       originMarker.current.remove();
       originMarker.current = null;
@@ -154,10 +171,13 @@ export function TripMap({
 
     if (dest) {
       if (destMarker.current) destMarker.current.setLngLat([dest.lng, dest.lat]);
-      else
-        destMarker.current = new maplibregl.Marker({ element: createMarkerElement("dest"), anchor: "bottom" })
+      else {
+        const m = new maplibregl.Marker({ element: createMarkerElement("dest"), anchor: "bottom", draggable })
           .setLngLat([dest.lng, dest.lat])
           .addTo(map);
+        if (draggable) m.on("dragend", () => onDestMoveRef.current?.(m.getLngLat()));
+        destMarker.current = m;
+      }
     } else if (destMarker.current) {
       destMarker.current.remove();
       destMarker.current = null;
@@ -170,6 +190,7 @@ export function TripMap({
       src?.setData({ type: "Feature", geometry: { type: "LineString", coordinates: coords }, properties: {} });
     }
 
+    if (!autoFit) return;
     if (origin && dest) {
       map.fitBounds(
         new maplibregl.LngLatBounds([origin.lng, origin.lat], [dest.lng, dest.lat]),

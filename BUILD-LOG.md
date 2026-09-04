@@ -145,3 +145,7 @@ Shared `lib/trip-state.ts` (localStorage `useTrip`) carries origin/dest/arriveBy
 - `lib/arrive-by.ts` (clamp/step/toHM/to12h) + `isMultiPart` heuristic (office-hub/landmark without a building number → 07; flagged in PARKED for a real `multi_part` column).
 - **TDD:** `tests/arrive-by.test.ts` (6). 84 Vitest green.
 - **Verify:** tsc + lint clean; live at `/to` — arrive-by control + real places, console clean; screenshot sent.
+
+### P5.4 — 06 Set on map ✅ (2026-09-04)
+- `app/map/page.tsx` — full-height TripMap with **draggable** origin (ring) + dest (teardrop) pins, prefilled from trip or Delhi defaults; drag updates local state; Confirm points → writes trip origin/dest → `/ways`. Added `draggable`/`onOriginMove`/`onDestMove`/`autoFit` props to TripMap (autoFit off so dragging doesn't re-center).
+- **Verify:** tsc + lint + 84 Vitest green; map **paints in a real browser** (duotone south Delhi) with both pins, console clean; screenshot sent. (Draggable marker interaction is standard MapLibre.)
