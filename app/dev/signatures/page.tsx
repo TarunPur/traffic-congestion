@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { SplitFlap } from "@/components/split-flap";
 import { Duotone } from "@/components/duotone";
+import { ClearingSplash } from "@/components/clearing-splash";
 import { Cta } from "@/components/controls";
 
 /** P1 signatures gallery (dev-only) — grows to hold all four signature components. */
@@ -12,6 +13,9 @@ export default function SignaturesDevPage() {
   return (
     <main className="mx-auto max-w-[480px] px-m pb-24 pt-6">
       <p className="lab">Clearline · signatures</p>
+
+      <H>ClearingSplash — brand moment</H>
+      <ClearingSplash />
 
       <H>SplitFlap — hero</H>
       <SplitFlap value={t} aria-label={`Leave by ${t}`} />

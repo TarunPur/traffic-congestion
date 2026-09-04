@@ -498,3 +498,67 @@
   height: 47px;
   line-height: 47px;
 }
+
+/**
+ * ClearingSplash (P1.5) — the brand moment: the city's tangle of routes straightens into one
+ * clear line, then the wordmark + tagline resolve. Ported from 01-login.html. Reduced motion
+ * settles instantly (never blank). Scoped under .clearing-splash.
+ */
+.clearing-splash {
+  text-align: center;
+}
+.clearing-splash .mark {
+  width: 300px;
+  height: 54px;
+  margin: 0 auto;
+  display: block;
+  overflow: visible;
+}
+.clearing-splash .mark path {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+.clearing-splash .mark .node {
+  fill: var(--ink);
+  opacity: 0;
+}
+.clearing-splash .wordmark {
+  display: inline-block;
+  position: relative;
+  margin-top: 6px;
+  opacity: 0;
+  transform: translateY(6px);
+}
+.clearing-splash .wordmark.in {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+}
+.clearing-splash .wordmark .word {
+  font-family: var(--wordmark);
+  font-weight: 600;
+  font-size: 41px;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  line-height: 1;
+}
+.clearing-splash .tagline {
+  font-family: var(--grot);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  color: var(--grey);
+  margin-top: 16px;
+  opacity: 0;
+}
+.clearing-splash .tagline.in {
+  opacity: 1;
+  transition: opacity 0.6s var(--ease);
+}
+@media (prefers-reduced-motion: reduce) {
+  .clearing-splash .wordmark,
+  .clearing-splash .tagline {
+    transition: none;
+  }
+}

@@ -70,3 +70,8 @@ Bound by ERD.md + the frozen docs. `../design/journey1-timetable/16screensjourne
 - `lib/duotone.ts` — pure `duotonePixels()` transform ported from CL.duotone (paper↔ink, contrast 1.9 / pivot .46 / max .86). `components/duotone.tsx` — canvas renders the two-tone map, top/bottom vignette into paper (ported masthead gradient), credit line. Ships `public/img/dlf-cyberhub.jpg` (CC BY-SA 4.0, credit "Slyronit").
 - **TDD:** `tests/duotone.test.ts` (5) — bright→paper, dark→ink capped at max, monochrome ramp, max scaling, buffer length. (Canvas paint verified live, not in jsdom.)
 - **Verify:** 46/46 tests, tsc + lint clean; masthead paints monochrome + vignetted in a real browser with credit visible, console clean (no CORS/taint); screenshot sent.
+
+### P1.5 — ClearingSplash 🎯 ✅ (2026-09-04)
+- `components/clearing-splash.tsx` — 9 tangled strands straighten into one clear line (strand 0 survives), node travels X0→X1, wordmark (Space Grotesk via `--wordmark`) then tagline fade in. Ported from 01-login.html. Reduced-motion `settle()` renders the final state instantly + fires `onDone` (never blank). Scoped CSS in globals.
+- **TDD:** `tests/clearing-splash.test.tsx` (5) — 9 strands + node, reduced-motion settle (wordmark/tagline `in`, node at 314, strand-0 survives), onDone immediate, custom copy, non-settled when motion allowed.
+- **Verify:** 51/51 tests, tsc + lint clean; `/dev/signatures` resolves to the clear line + wordmark live (StrictMode replays once in dev), console clean; screenshot sent.
