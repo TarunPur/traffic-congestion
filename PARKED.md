@@ -15,8 +15,15 @@ until Tarun approves.
   99999 00001→123456) + a dummy provider so phone auth runs locally without SMS. Full login→OTP
   flow verified live.
 - [ ] **PRODUCTION auth** — for the remote/prod project: configure a REAL SMS provider (or dashboard
-  test numbers for the pilot) and ensure **no test-OTP numbers** ship to prod. Gate/remove the
-  `/dev/*` gallery routes before launch (currently public). (P11.5)
+  test numbers for the pilot) and ensure **no test-OTP numbers** ship to prod. (P11.5)
+  - [x] `/dev/*` gallery routes — DONE (P11.1): a 404 in production via `lib/supabase/middleware.ts`.
+- [ ] **Playwright e2e** — `playwright.config.ts` + `tests/e2e/journeys.spec.ts` are written and
+  ready (both journeys per `journey.md §3`), and `pnpm test:e2e` is wired. Needs a dependency add
+  before it can run: `pnpm add -D @playwright/test && pnpm exec playwright install chromium`
+  (an install — pending Tarun's approval). Run with local Supabase up + a clean `supabase db reset`.
+- [ ] **API rate-limiting** — none of the mutating routes (`/api/commute|profile|feedback|privacy|
+  demand|eligibility|commit|managed*`) are rate-limited. Self-DoS / abuse only (all owner-scoped),
+  but add a per-user/IP limiter before the public launch.
 - [ ] **Mappls key** — signup is Tarun's; confirm free/no-card/routing-in-tier. Until then the
   Planner runs on the locked sample-plan stub (P4.1). Do not wire P4.2 without the key.
 - [ ] **NO-GO screen confirmations** — every product screen gets a screenshot via SendUserFile;
