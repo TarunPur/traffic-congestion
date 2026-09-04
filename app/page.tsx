@@ -34,10 +34,10 @@ function fmtDate(d: Date): string {
 function greeting(h: number): string {
   return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening";
 }
-function nowMin(): number {
-  const d = new Date();
-  return d.getHours() * 60 + d.getMinutes();
-}
+/** Documented sample starting value for the "until you go" countdown — matches the locked
+ * design's own 10-savedhome.html script (`let mins=12`), which ticks down independent of the
+ * real clock rather than being derived from it. */
+const INITIAL_COUNTDOWN_MIN = 12;
 function firstRide(legs: Leg[]): Leg | undefined {
   return legs.find((l) => l.ride);
 }
@@ -108,11 +108,17 @@ export default function Home() {
   const leaveBy = recommended?.legs[0]?.depTime ?? null;
 
   // Ticking "until you go" countdown (info, not motion — runs under reduced-motion too).
+  // This is a documented sample countdown (matching the locked design's own 10-savedhome.html
+  // script), not derived from the real wall clock against the stub's fixed depTime — the stub's
+  // depTime is a locked demo value (e.g. "8:35") that has no relationship to today's actual
+  // time-of-day, so comparing it against the real clock produced a nonsensical multi-hour
+  // countdown outside the narrow morning window the demo data implies (see PIXEL-AUDIT.md).
   useEffect(() => {
     if (!leaveBy) return;
-    const update = () => setLeftMin(hmToMin(leaveBy) - nowMin());
-    update();
-    tick.current = setInterval(update, 60_000);
+    setLeftMin(INITIAL_COUNTDOWN_MIN);
+    tick.current = setInterval(() => {
+      setLeftMin((m) => (m == null ? m : Math.max(0, m - 1)));
+    }, 60_000);
     return () => {
       if (tick.current) clearInterval(tick.current);
     };
@@ -253,7 +259,12 @@ export default function Home() {
                   <div className="laters">
                     {others.map((p) => {
                       const dep = p.legs[0]?.depTime ?? "";
-                      const inMin = dep ? hmToMin(dep) - nowMin() : null;
+                      // Relative to the recommended plan's own ticking countdown, not the real
+                      // clock — same fix as the primary countdown above (PIXEL-AUDIT.md).
+                      const inMin =
+                        dep && leaveBy && leftMin != null
+                          ? leftMin + (hmToMin(dep) - hmToMin(leaveBy))
+                          : null;
                       const rl = firstRide(p.legs);
                       return (
                         <button

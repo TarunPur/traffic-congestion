@@ -1,13 +1,18 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { Cta, Segmented, TabBar } from "@/components/controls";
 import { Icon } from "@/components/icon";
 import { SplitFlap } from "@/components/split-flap";
-import { hmToMin } from "@/lib/planner/types";
 import type { ManagedPlan } from "@/lib/managed-plan";
+
+/** Documented sample starting value for the "until pickup" countdown — matches the locked
+ * design's own 23-managed-home.html script (`let mins=18`), which ticks down independent of
+ * the real clock rather than deriving it from `plan.leaveBy` (a fixed demo time unrelated to
+ * today's actual time-of-day — see PIXEL-AUDIT.md's countdown bug). */
+const INITIAL_COUNTDOWN_MIN = 18;
 
 /**
  * 23 · Managed home (BUILD-SPEC §11·23) — the post-activation home. Mirrors the J1 home so the
@@ -29,7 +34,20 @@ export default function ManagedHomePage() {
   const [plan, setPlan] = useState<ManagedPlan | null>(null);
   const [setup, setSetup] = useState<Setup | null>(null);
   const [state, setState] = useState<"loading" | "ready" | "none">("loading");
+  const [leftMin, setLeftMin] = useState<number | null>(null);
+  const tick = useRef<ReturnType<typeof setInterval> | null>(null);
   const today = useMemo(() => new Date(), []);
+
+  useEffect(() => {
+    if (!plan) return;
+    setLeftMin(INITIAL_COUNTDOWN_MIN);
+    tick.current = setInterval(() => {
+      setLeftMin((m) => (m == null ? m : Math.max(0, m - 1)));
+    }, 60_000);
+    return () => {
+      if (tick.current) clearInterval(tick.current);
+    };
+  }, [plan]);
 
   useEffect(() => {
     let cancelled = false;
@@ -113,8 +131,6 @@ export default function ManagedHomePage() {
     );
   }
 
-  const leftMin = hmToMin(plan.leaveBy) - (today.getHours() * 60 + today.getMinutes());
-
   return (
     <AppShell scrollClassName="pb-[20px]" foot={foot}>
       <div className="htop">
@@ -145,7 +161,7 @@ export default function ManagedHomePage() {
           <div className="flapline">
             <SplitFlap value={plan.leaveBy} aria-label={`Be ready by ${plan.leaveBy}`} />
             <div className="cd">
-              <div className="n g">{leftMin <= 0 ? "be ready" : `${leftMin} min`}</div>
+              <div className="n g">{leftMin == null ? "—" : leftMin <= 0 ? "be ready" : `${leftMin} min`}</div>
               <div className="u">until pickup</div>
             </div>
           </div>

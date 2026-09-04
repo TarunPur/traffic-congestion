@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { Plan } from "@/lib/planner/types";
 
@@ -74,6 +74,36 @@ describe("10 Saved / home", () => {
   });
   afterEach(() => {
     vi.unstubAllGlobals();
+    vi.useRealTimers();
+  });
+
+  it("shows a small, sane 'until you go' countdown no matter what time it actually is", async () => {
+    // Regression for the countdown bug (PIXEL-AUDIT.md): it used to be computed as
+    // hmToMin(leaveBy) - realWallClockNow(), so at 2am it showed "312 min" instead of the
+    // locked design's fixed "12 min". The countdown must not depend on the real clock at all.
+    vi.setSystemTime(new Date("2026-09-05T02:00:00"));
+    vi.stubGlobal("fetch", mockFetch(SAVED));
+    render(<Home />);
+    expect(await screen.findByText("12 min")).toBeInTheDocument();
+  });
+
+  it("ticks the countdown down by one minute per minute, down to 'leave now'", async () => {
+    vi.useFakeTimers();
+    try {
+      vi.stubGlobal("fetch", mockFetch(SAVED));
+      render(<Home />);
+      await vi.waitFor(() => expect(screen.getByText("12 min")).toBeInTheDocument());
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(60_000);
+      });
+      expect(screen.getByText("11 min")).toBeInTheDocument();
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(60_000 * 11);
+      });
+      expect(screen.getByText("leave now")).toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("shows the saved commute hero with the leave-by board and today's-plan CTA", async () => {

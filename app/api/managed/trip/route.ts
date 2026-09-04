@@ -12,11 +12,6 @@ import type { Json } from "@/lib/supabase/types";
  * placeholders. The screen also subscribes to Realtime UPDATEs on this row for the real feed.
  */
 
-function nowMinUTCLocal(): number {
-  const d = new Date();
-  return d.getHours() * 60 + d.getMinutes();
-}
-
 export async function GET() {
   const supabase = await createClient();
   const {
@@ -40,13 +35,16 @@ export async function GET() {
 
   let { data: row } = await supabase
     .from("managed_trips")
-    .select("id, steps, driver, vehicle, eta_min, share_link, status")
+    .select("id, steps, driver, vehicle, eta_min, share_link, status, created_at")
     .eq("booking_id", booking.id)
     .eq("date", today)
     .maybeSingle();
 
   if (!row) {
-    const seedSteps = deriveSteps(nowMinUTCLocal());
+    // The schedule is anchored to real trip-creation time, not a hardcoded clock time (see
+    // lib/managed-trip.ts) — elapsedMin is 0 at the moment of creation by definition.
+    const anchor = new Date();
+    const seedSteps = deriveSteps(0, anchor);
     const { data: created } = await admin
       .from("managed_trips")
       .insert({
@@ -55,20 +53,23 @@ export async function GET() {
         steps: seedSteps as unknown as Json,
         driver: DEMO_DRIVER.name,
         vehicle: DEMO_DRIVER.vehicle,
-        eta_min: etaMinutes(nowMinUTCLocal(), seedSteps),
+        eta_min: etaMinutes(0, seedSteps),
         status: "en_route",
       })
-      .select("id, steps, driver, vehicle, eta_min, share_link, status")
+      .select("id, steps, driver, vehicle, eta_min, share_link, status, created_at")
       .single();
     row = created ?? null;
   }
   if (!row) return NextResponse.json({ error: "trip_unavailable" }, { status: 500 });
 
+  const anchor = new Date(row.created_at);
+  const elapsedMin = (Date.now() - anchor.getTime()) / 60_000;
+
   // stub source: re-derive step state from the schedule on every read so the tracker advances
-  // over the morning even with no live feed. A real feed instead drives it via Realtime UPDATEs.
+  // over time even with no live feed. A real feed instead drives it via Realtime UPDATEs.
   const live: LiveTrip =
     source === "stub" || source === "diy"
-      ? buildLiveTrip(row.id, nowMinUTCLocal(), source)
+      ? buildLiveTrip(row.id, elapsedMin, anchor, source)
       : {
           tripId: row.id,
           driver: row.driver ?? DEMO_DRIVER.name,

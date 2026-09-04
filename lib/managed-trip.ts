@@ -6,6 +6,13 @@
  * corridor, the `stub` source derives step state from the schedule (the committed windows) — it
  * NEVER fabricates a moving GPS position. Driver / vehicle strings are documented placeholders
  * (design §5c real-vs-placeholder) and labelled as such in the UI.
+ *
+ * The schedule is anchored to the trip's real creation time (`managed_trips.created_at`), not a
+ * hardcoded absolute clock time — it used to be pinned to a fixed "7:58am" and compared against
+ * the real wall clock, which produced a nonsensical multi-hour ETA outside that narrow window
+ * (PIXEL-AUDIT.md). Anchoring to creation time reproduces the locked design's exact "Pickup ·
+ * 3 min away" snapshot at the moment a trip starts, and then progresses it realistically from
+ * there, regardless of what time of day it actually is.
  */
 
 export type StepState = "done" | "now" | "upcoming";
@@ -13,8 +20,8 @@ export type StepState = "done" | "now" | "upcoming";
 export interface TripStep {
   label: string;
   sub: string;
-  time: string; // H:MM
-  min: number; // minutes since midnight (for schedule-derived state)
+  time: string; // H:MM, relative to the trip's real creation time
+  min: number; // minutes elapsed since trip creation (for schedule-derived state)
   state: StepState;
 }
 
@@ -30,41 +37,53 @@ export interface LiveTrip {
   placeholder: boolean;
 }
 
-const BASE_STEPS: Omit<TripStep, "state">[] = [
-  { label: "Pickup · Hauz Khas Enclave", sub: "Clearline auto arriving", time: "7:58", min: 7 * 60 + 58 },
-  { label: "AC shuttle · Hauz Khas → Cyber City", sub: "Reserved · committed window", time: "8:07", min: 8 * 60 + 7 },
-  { label: "Staged transfer · Cyber City", sub: "Last-mile auto held for you", time: "8:51", min: 8 * 60 + 51 },
-  { label: "DLF Cyber City, Bldg 10", sub: "Verified walk to lobby", time: "8:57", min: 8 * 60 + 57 },
+// Same relative spacing as the original fixed schedule (7:58 / 8:07 / 8:51 / 8:57 — 9/44/6 min
+// apart), now expressed as an offset from trip creation instead of an absolute morning clock
+// time. Offset 3 means "Pickup is 3 min away right when the trip is created" — matching the
+// locked 22-livetrip.html's "3" split-flap snapshot.
+const STEP_SPECS: { label: string; sub: string; offsetMin: number }[] = [
+  { label: "Pickup · Hauz Khas Enclave", sub: "Clearline auto arriving", offsetMin: 3 },
+  { label: "AC shuttle · Hauz Khas → Cyber City", sub: "Reserved · committed window", offsetMin: 12 },
+  { label: "Staged transfer · Cyber City", sub: "Last-mile auto held for you", offsetMin: 56 },
+  { label: "DLF Cyber City, Bldg 10", sub: "Verified walk to lobby", offsetMin: 62 },
 ];
 
-/** Schedule-derived step states: the step whose window contains `nowMin` is "now". */
-export function deriveSteps(nowMin: number): TripStep[] {
-  let activeIdx = BASE_STEPS.findIndex((s, i) => {
-    const next = BASE_STEPS[i + 1];
-    return nowMin < s.min || !next || nowMin < next.min;
+function fmtClock(d: Date): string {
+  return `${d.getHours()}:${String(d.getMinutes()).padStart(2, "0")}`;
+}
+
+/** Schedule-derived step states: the step whose window contains `elapsedMin` (minutes since
+ * `anchor`, the trip's real creation time) is "now". */
+export function deriveSteps(elapsedMin: number, anchor: Date): TripStep[] {
+  let activeIdx = STEP_SPECS.findIndex((s, i) => {
+    const next = STEP_SPECS[i + 1];
+    return elapsedMin < s.offsetMin || !next || elapsedMin < next.offsetMin;
   });
-  if (activeIdx < 0) activeIdx = BASE_STEPS.length - 1;
-  return BASE_STEPS.map((s, i) => ({
-    ...s,
+  if (activeIdx < 0) activeIdx = STEP_SPECS.length - 1;
+  return STEP_SPECS.map((s, i) => ({
+    label: s.label,
+    sub: s.sub,
+    time: fmtClock(new Date(anchor.getTime() + s.offsetMin * 60_000)),
+    min: s.offsetMin,
     state: i < activeIdx ? "done" : i === activeIdx ? "now" : "upcoming",
   }));
 }
 
-export function etaMinutes(nowMin: number, steps: TripStep[]): number {
+export function etaMinutes(elapsedMin: number, steps: TripStep[]): number {
   const active = steps.find((s) => s.state === "now") ?? steps[0]!;
-  return Math.max(0, active.min - nowMin);
+  return Math.max(0, active.min - elapsedMin);
 }
 
 export const DEMO_DRIVER = { name: "Ramesh K.", vehicle: "Silver WagonR · DL 1C AB 2345" };
 
-export function buildLiveTrip(tripId: string, nowMin: number, source: string): LiveTrip {
-  const steps = deriveSteps(nowMin);
+export function buildLiveTrip(tripId: string, elapsedMin: number, anchor: Date, source: string): LiveTrip {
+  const steps = deriveSteps(elapsedMin, anchor);
   const active = steps.find((s) => s.state === "now") ?? steps[0]!;
   return {
     tripId,
     driver: DEMO_DRIVER.name,
     vehicle: DEMO_DRIVER.vehicle,
-    etaMin: etaMinutes(nowMin, steps),
+    etaMin: etaMinutes(elapsedMin, steps),
     legLabel:
       active.label.startsWith("Pickup") || active.label.startsWith("AC shuttle")
         ? "First mile · Clearline auto"

@@ -31,7 +31,20 @@ import ManagedHomePage from "@/app/managed/page";
 
 describe("23 Managed home", () => {
   beforeEach(() => push.mockClear());
-  afterEach(() => vi.unstubAllGlobals());
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.useRealTimers();
+  });
+
+  it("shows a small, sane 'until pickup' countdown no matter what time it actually is", async () => {
+    // Regression for the countdown bug (PIXEL-AUDIT.md): it used to be computed as
+    // hmToMin(leaveBy) - realWallClockNow(), so at 2am it showed "271 min" instead of the
+    // locked design's fixed "18 min".
+    vi.setSystemTime(new Date("2026-09-05T02:00:00"));
+    vi.stubGlobal("fetch", mockFetch(PLAN));
+    render(<ManagedHomePage />);
+    expect(await screen.findByText("18 min")).toBeInTheDocument();
+  });
 
   it("leads with the assigned managed ride", async () => {
     vi.stubGlobal("fetch", mockFetch(PLAN));
