@@ -162,3 +162,21 @@ Shared `lib/trip-state.ts` (localStorage `useTrip`) carries origin/dest/arriveBy
 - **Verify:** tsc + lint + 84 Vitest green; live at `/plan?name=fastest` — count-ups, yellow line-colour trunk + open ends, scheduled stamp + expander all correct, console clean; screenshot sent.
 
 **Phase 5 checkpoint:** Journey 1 plan flow complete — 03→04→05→06→07→08→09 all live on real planner data, honesty labels throughout. ▶ Phase 6 (J1 home 10/16) next.
+
+## Phase 6 — Journey 1 home & shell (screens 10, 16)
+
+### P6.1 — 10 Saved / home ✅ (2026-09-04)
+- `app/page.tsx` replaces the shell placeholder. GET `/api/commute` (RLS owner-only) → POST `/api/plan` → leave-by `SplitFlap` + ticking "until you go" countdown + board line (first ride leg + Scheduled/Live `tl` label) + verdict; **later departures** from the other plans (dep time, mode chain, in-N-min); **oxblood disruption banner** when the recommended way is late vs the saved arrive-by; **empty onboarding state** (no saved commute → "Plan a commute" → `/choose`); **Myself/Clearline** `Segmented` → J2 upsell → `/eligibility`; bottom `TabBar` (Home current).
+- `app/api/commute/route.ts` (NEW, 🔒) — GET lists the caller's `saved_commutes`, POST saves one. `user_id` from the SSR session (never the body); RLS `saved_commutes_owner_all` backstop; input validated + clamped (label 80, mode 20, arriveBy regex); HH:MM round-trips through the `timestamptz` column (UTC set/get).
+- `lib/save-commute.ts` — thin POST wrapper. Wired **08 "Set as my commute"** + **09 "Save this plan"** to actually insert `saved_commutes` (idle/saving/saved/error, "Saved as your commute" restatement, oxblood cap line on error) then land on `/`.
+- Ported `10-savedhome.html` CSS verbatim into `globals.css @layer components`. **Skipped** the destination duotone thumbnail (DLF-specific asset; generic saved dests have no art) — revisit in P11 polish.
+- **TDD:** `tests/home.test.tsx` (6). **🔒 security-review:** self-reviewed staged diff (auth-gated, `user_id` server-side, RLS backstop, input clamped, no service-role, no secrets) — zero high-severity; pass recorded. Advisory: no rate-limiting (matches `/api/plan`, parked P11).
+- **Verify:** tsc + lint clean; 90 Vitest green (was 84).
+
+### P6.2 — 16 You / Account ✅ (2026-09-04)
+- `app/you/page.tsx` — identity header (masked phone · Free), **recent trips** read from `trips` (browser client, RLS owner-only) with relative-day labels, **Settings menu** → `/profile /feedback /support /privacy /about`, **sign-out** → `supabase.auth.signOut()` → `/login`, bottom `TabBar` (You current).
+- Ported `16-account.html` CSS verbatim into `globals.css`.
+- **TDD:** `tests/you.test.tsx` (4) — identity + masked phone, menu routing, sign-out → `/login`, TabBar current + Home nav.
+- **Verify:** tsc + lint clean; 94 Vitest green.
+
+**Phase 6 checkpoint:** J1 home + shell done — `/` is the real retention surface on live planner data, `/you` is the account hub, the save-commute loop (08/09 → 10) is wired end-to-end. ▶ Phase 7 (J1 More: 11–15 + demand instrumentation) next.
