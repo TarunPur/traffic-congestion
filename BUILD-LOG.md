@@ -125,3 +125,12 @@ Docker was down; I started it + local Supabase (`supabase start`) so RLS ran for
 - **TDD:** `tests/planner.test.ts` (8) — shape, timeVsCar, projectedArrival, onTime at 9:30 & 9:20, and the honesty fields (arrangeYourself / scheduled-vs-live).
 - **🔒 security-review:** zero high-severity (auth→401 verified live; service-role used narrowly post-auth; input validated); pass recorded. Note: add rate-limiting in P11.
 - **Verify:** 72 Vitest green, tsc + lint clean; `/api/plan` returns 401 unauth. **Parked:** P4.2 real Mappls (Tarun's key) + P4.3 live-bus GTFS-RT feed.
+
+## Phase 5 — Journey 1 plan flow (screens 03–09)
+
+Shared `lib/trip-state.ts` (localStorage `useTrip`) carries origin/dest/arriveBy/service across 03–09.
+
+### P5.1 — 03 Choose service ✅ (2026-09-04)
+- `app/choose/page.tsx` — two `.mode` radio cards (Free default / Managed), serif titles, radio dot, ink-rule-when-selected. Free → `/from`; Managed → `/eligibility` with CTA "Join the waitlist". Honest "Available only on covered corridors" sub-line kept. Ported from 03-choosemode.
+- **TDD:** `tests/choose.test.tsx` (3) — default Free→/from, Managed→waitlist→/eligibility, honesty line. 75 Vitest green.
+- **Verify:** tsc + lint clean; live at `/choose` matches prototype (session persisted), console clean; screenshot sent.
