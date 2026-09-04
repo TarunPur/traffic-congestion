@@ -31,5 +31,10 @@ until Tarun approves.
 - [ ] **design.md §1 grey table** — still lists pre-retune greys `#726c5e/#9a9384`; the authoritative
   retuned set `#5f5a4e/#877f6e` (ERD §2 + active CSS) is what's built. Docs cleanup only.
 
+## Later refinements (non-blocking)
+- [ ] **Places `multi_part`/`parts` model** — screen 05→07 routing currently uses an `isMultiPart`
+  name/type heuristic. A proper `multi_part boolean` + `parts` (buildings/gates) on the places table
+  is the real model; screen 07 uses a demo parts list until then.
+
 ## Resolved
 - Supabase project created (2026-09-04).

@@ -442,6 +442,72 @@
     color: var(--accent);
   }
 
+  /* arrive-by bar (screen 05) — eyebrow + serif time hero + hairline ±15 stepper */
+  .arrivebar {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px var(--m) 15px;
+    border-top: 1px solid var(--hair);
+  }
+  .ab-main {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+  .ab-eyebrow {
+    font-family: var(--grot);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--grey2);
+  }
+  .ab-time {
+    font-family: var(--serif);
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums lining-nums;
+    line-height: 1;
+    letter-spacing: -0.01em;
+  }
+  .ab-time .mer {
+    font-family: var(--grot);
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--grey);
+    margin-left: 6px;
+    vertical-align: 2px;
+  }
+  .ab-steps {
+    display: inline-flex;
+    border: 1px solid var(--hair);
+  }
+  .ab-step {
+    all: unset;
+    cursor: pointer;
+    font-family: var(--grot);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink);
+    padding: 10px 14px;
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+  .ab-step + .ab-step {
+    border-left: 1px solid var(--hair);
+  }
+  .ab-step:hover {
+    background: color-mix(in srgb, var(--ink) 6%, transparent);
+  }
+  .ab-step:active {
+    background: color-mix(in srgb, var(--ink) 11%, transparent);
+  }
+
   /* map confirmation band eyebrow pill (screens 04/05) */
   .band-eyebrow {
     position: absolute;

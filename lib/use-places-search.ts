@@ -31,6 +31,16 @@ export function iconForPlace(p: PlaceResult): IconName {
   return ICON_BY_TYPE[p.type];
 }
 
+/**
+ * Multi-part POI check (screen 05 → 07 routing). A large office hub without a specific building
+ * number still needs a "which part / entrance" step. Heuristic for the pilot — a proper
+ * `multi_part`/`parts` column on places is the real model (parked in PARKED.md).
+ */
+export function isMultiPart(p: { type: PlaceResult["type"]; name: string }): boolean {
+  const specificBuilding = /\b(building|bldg|block|tower|gate)\b\s*\w*\d/i.test(p.name);
+  return (p.type === "office_hub" || p.type === "landmark") && !specificBuilding;
+}
+
 export function usePlacesSearch(query: string, debounceMs = 150) {
   const [results, setResults] = useState<PlaceResult[]>([]);
   const [loading, setLoading] = useState(false);

@@ -134,3 +134,14 @@ Shared `lib/trip-state.ts` (localStorage `useTrip`) carries origin/dest/arriveBy
 - `app/choose/page.tsx` — two `.mode` radio cards (Free default / Managed), serif titles, radio dot, ink-rule-when-selected. Free → `/from`; Managed → `/eligibility` with CTA "Join the waitlist". Honest "Available only on covered corridors" sub-line kept. Ported from 03-choosemode.
 - **TDD:** `tests/choose.test.tsx` (3) — default Free→/from, Managed→waitlist→/eligibility, honesty line. 75 Vitest green.
 - **Verify:** tsc + lint clean; live at `/choose` matches prototype (session persisted), console clean; screenshot sent.
+
+### P5.2 — 04 Where from ✅ (2026-09-04)
+- `app/from/page.tsx` — debounced (~150ms) type-ahead over the seeded `places` table (`lib/use-places-search.ts`, browser client), result rows (icon-by-type + highlighted match), Use-current-location (idle/locating/denied, denied→oxblood), Set-on-map → `/map`, non-interactive TripMap confirmation band (recenters on the picked point — added single-point easeTo to TripMap). Choose → `trip.origin` → Set as start → `/to`.
+- **TDD:** `tests/from.test.tsx` (3). 78 Vitest green.
+- **Verify:** tsc + lint clean; live at `/from` shows **real seeded places** with correct icons/sub-labels, console clean; screenshot sent.
+
+### P5.3 — 05 Where to ✅ (2026-09-04)
+- `app/to/page.tsx` — dest search (same debounced places pattern), the **arrive-by bar** (serif 12h hero + −15/+15 stepper, `lib/arrive-by.ts` clamp 05:00–23:45 step ±15 default 09:30), map band. Set as destination → writes `{dest, arriveBy}` → `isMultiPart` ? `/part` : `/ways`.
+- `lib/arrive-by.ts` (clamp/step/toHM/to12h) + `isMultiPart` heuristic (office-hub/landmark without a building number → 07; flagged in PARKED for a real `multi_part` column).
+- **TDD:** `tests/arrive-by.test.ts` (6). 84 Vitest green.
+- **Verify:** tsc + lint clean; live at `/to` — arrive-by control + real places, console clean; screenshot sent.
