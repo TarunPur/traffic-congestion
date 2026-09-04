@@ -83,3 +83,23 @@ Bound by ERD.md + the frozen docs. `../design/journey1-timetable/16screensjourne
 - **Verify:** 54/54 tests, tsc + lint clean; map **paints in a real browser** as a monochrome duotone (New Delhi, OSM attribution), console clean — confirms the documented automation-tab freeze is only a paint-kick issue, resolved by the repaint kick; screenshot sent.
 
 **Phase 1 checkpoint:** design system complete — Icon, all core controls, and the four signature components (SplitFlap, Duotone, ClearingSplash, TripMap), each with reduced-motion + states, matching the prototype. Gallery routes: `/dev/tokens`, `/dev/controls`, `/dev/signatures`. ▶ Phase 2 (data model & RLS) next.
+
+## Phase 2 — Data model & RLS (verified on real local Postgres)
+
+Docker was down; I started it + local Supabase (`supabase start`) so RLS ran for real — not parked.
+
+### P2.1 — J1 migrations + RLS 🔒 ✅ (2026-09-04)
+- `supabase/migrations/20260904000001_j1_schema.sql` — places (public read), trips, plans, saved_commutes, profile_fields, feedback, demand_prefs, demand_signals (ERD §3). RLS owner-only (subselect-wrapped auth.uid, indexed); reference read-only; **demand_signals server-write-only (RLS on, no policies)**; feedback internal-only.
+- **TDD:** `supabase/tests/j1_rls_test.sql` (pgTAP, 11) — owner isolation, home hidden cross-user, demand_signals unreadable, places read-only.
+
+### P2.2 — J2 migrations + RLS 🔒 ✅ (2026-09-04)
+- `supabase/migrations/20260904000002_j2_schema.sql` — partner_domains (server-only, no policies), corridors (public read, committed_count server-only), eligibility (owner-read; **partnered not client-writable**), commitments (owner), managed_setups (owner), managed_plans/bookings/managed_trips (owner via join). **bookings.billing_on can never be set true by a client** (policy check) — no money.
+- **TDD:** `supabase/tests/j2_rls_test.sql` (pgTAP, 10) — isolation, forge-partnered blocked, committed_count RLS no-op, billing_on=true blocked, partner_domains unreadable.
+
+### P2.3 — Seed ✅ (2026-09-04)
+- `supabase/seed.sql` idempotent — sample places (Hauz Khas Enclave, DLF Cyber Hub Bldg 10 + a few), the one demo corridor (threshold 250, **committed_count 0 — real, not the mockup's fabricated 168**, flagged in PARKED), placeholder partner domain.
+- Generated real types → `lib/supabase/types.ts` (`supabase gen types --local`, replaces the placeholder).
+- **🔒 security-review:** zero high-severity (RLS comprehensive + 21 tests prove it; no secrets; no fabricated traction); pass recorded.
+- **Verify:** local `supabase start` applied both migrations + seed cleanly; **`supabase test db` → all 21 RLS tests PASS**; app tsc + lint + 54 Vitest green with generated types. **Parked:** apply to the remote project (needs keys) — local is fully verified.
+
+**Phase 2 checkpoint:** schema + RLS live on the local dev DB, 21 RLS tests green, seed loads. ▶ Phase 3 (auth) next.

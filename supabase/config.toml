@@ -1,0 +1,16 @@
+# Clearline — Supabase local config. Project ref set on link (parked until keys arrive).
+project_id = "clearline"
+
+[db]
+port = 54322
+major_version = 15
+
+[auth]
+enabled = true
+# Phone OTP via test numbers in the pilot (no SMS provider spend). See PARKED.md.
+[auth.sms]
+enable_signup = true
+enable_confirmations = false
+
+[auth.sms.test_otp]
+# Populated by Tarun for local/preview testing, e.g. 919999999999 = "123456".
