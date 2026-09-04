@@ -118,6 +118,15 @@
     margin-top: 9px;
     line-height: 1.5;
   }
+  /* Screen 07's own lead paragraph (07-whichpart.html) — that screen has no .h1 sibling, so
+     .h1 + .said can never match there; ported as its own class instead of forcing that selector. */
+  .lead {
+    font-family: var(--grot);
+    font-size: 13px;
+    color: var(--grey);
+    margin-top: 20px;
+    line-height: 1.5;
+  }
   .linkbtn {
     all: unset;
     cursor: pointer;

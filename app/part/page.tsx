@@ -58,7 +58,7 @@ export default function WhichPartPage() {
           type="button"
           aria-label="Back"
           onClick={() => router.push("/to")}
-          style={{ position: "absolute", left: "var(--m)", top: 16, zIndex: 5, background: "var(--paper)", boxShadow: "0 2px 10px -3px rgba(0,0,0,.35), inset 0 0 0 1px var(--hair)" }}
+          style={{ position: "absolute", left: "var(--m)", top: 22, zIndex: 5, background: "var(--paper)", boxShadow: "0 2px 10px -3px rgba(0,0,0,.35), inset 0 0 0 1px var(--hair)" }}
         >
           <Icon name="back" size={22} />
         </button>
@@ -71,7 +71,7 @@ export default function WhichPartPage() {
       </div>
 
       <div style={{ padding: "0 var(--m)" }}>
-        <div className="said" style={{ marginTop: 18 }}>It&rsquo;s a large place. Which entrance or building are you going to?</div>
+        <div className="lead">It&rsquo;s a large place. Which entrance or building are you going to?</div>
         <RuledRows>
           {DEMO_PARTS.map((p, i) => (
             <SelectableRow
