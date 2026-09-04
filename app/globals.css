@@ -2652,6 +2652,289 @@
   .later:active {
     color: var(--ink);
   }
+
+  /* live-vs-scheduled label — base .tl (bare use on 10/12/14/17; the itin-scoped variant above
+     overrides layout inside .r .place). Ported from clearline.css. */
+  .tl {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--grot);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: var(--grey2);
+    white-space: nowrap;
+  }
+  .tl .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex: none;
+  }
+  .tl.live .dot {
+    background: var(--ink);
+  }
+  .tl.sched .dot {
+    background: transparent;
+    box-shadow: inset 0 0 0 1.4px var(--grey2);
+  }
+  .tl.live {
+    color: var(--grey);
+  }
+  .tl.stale {
+    color: var(--accent);
+  }
+  .tl.stale .dot {
+    background: var(--accent);
+  }
+  .tl.mgd {
+    color: var(--ink);
+  }
+  .tl.mgd .dot {
+    background: var(--ink);
+    border-radius: 1px;
+  }
+  /* itin-scoped: the managed square + the leg note line */
+  .r .place .tl.mgd .dot {
+    background: var(--ink);
+    border-radius: 1px;
+  }
+  .r .place .arr {
+    display: block;
+    font-family: var(--grot);
+    font-size: 10.5px;
+    color: var(--grey);
+    font-weight: 400;
+    margin-top: 2px;
+  }
+
+  /* ── 19 Managed setup (screen 19) — ported from 19-setup.html ── */
+  .step2 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 8px;
+    padding: 10px 0;
+    border-bottom: 1.5px solid var(--hair);
+  }
+  .step2 .t {
+    font-family: var(--grot);
+    font-size: 20px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .step2 .btns {
+    display: flex;
+    gap: 8px;
+  }
+  .step2 button {
+    all: unset;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    box-shadow: inset 0 0 0 1px var(--hair);
+    color: var(--ink);
+  }
+  .step2 button:active {
+    background: color-mix(in srgb, var(--ink) 8%, transparent);
+  }
+  .days {
+    display: flex;
+    gap: 7px;
+    margin-top: 10px;
+  }
+  .days button {
+    all: unset;
+    cursor: pointer;
+    flex: 1;
+    text-align: center;
+    padding: 9px 0;
+    font-family: var(--grot);
+    font-size: 11px;
+    font-weight: 600;
+    box-shadow: inset 0 0 0 1px var(--hair);
+    color: var(--grey);
+  }
+  .days button[aria-pressed="true"] {
+    background: var(--ink);
+    color: var(--paper);
+    box-shadow: none;
+  }
+
+  /* ── 20 Itinerary card (screen 20) — ported from 20-itinerary.html ── */
+  .ticket {
+    margin-top: 14px;
+    background: var(--paper2);
+    padding: 20px var(--m) 22px;
+    border-top: 1px solid var(--hair);
+    border-bottom: 1px solid var(--hair);
+  }
+  .ticket .k {
+    font-family: var(--grot);
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.17em;
+    text-transform: uppercase;
+    color: var(--grey);
+  }
+  .ticket .flapline {
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+    margin-top: 12px;
+  }
+  .ticket .d2d {
+    padding-bottom: 6px;
+  }
+  .ticket .d2d .n {
+    font-family: var(--grot);
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .ticket .d2d .u {
+    font-family: var(--grot);
+    font-size: 10.5px;
+    color: var(--grey);
+    margin-top: 2px;
+  }
+  .ticket .od {
+    font-family: var(--serif);
+    font-size: 16px;
+    font-weight: 500;
+    margin-top: 16px;
+    line-height: 1.35;
+  }
+  .ticket .od .t {
+    color: var(--grey);
+  }
+  .perf {
+    height: 0;
+    border-top: 1px dashed var(--hair);
+    margin: 16px calc(-1 * var(--m)) 0;
+  }
+  .relia {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+    font-family: var(--grot);
+    font-size: 11.5px;
+    color: var(--grey);
+  }
+  .relia b {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .relia svg {
+    color: var(--ink);
+    flex: none;
+  }
+  .why {
+    margin-top: 22px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 22px;
+  }
+  .why .cell {
+    padding: 2px 0;
+  }
+  .why .n {
+    font-family: var(--grot);
+    font-size: 15px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .why .l {
+    font-family: var(--grot);
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--grey2);
+    margin-top: 2px;
+  }
+  .cap2 {
+    font-family: var(--grot);
+    font-size: 10.5px;
+    color: var(--grey2);
+    margin-top: 20px;
+    line-height: 1.5;
+  }
+
+  /* ── 21 Booking & pass (screen 21) — ported from 21-booking.html ── */
+  .plan .rowline {
+    grid-template-columns: 1fr auto 30px;
+  }
+  .plan .price {
+    font-family: var(--grot);
+    font-size: 14px;
+    font-weight: 600;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .plan .price .u {
+    display: block;
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--grey2);
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .plan .rowline[aria-selected="false"] .price {
+    color: var(--grey);
+  }
+  .terms {
+    margin-top: 4px;
+  }
+  .term {
+    display: grid;
+    grid-template-columns: 22px 1fr;
+    column-gap: 12px;
+    padding: 13px 0;
+    border-top: 1px solid var(--hair);
+    font-family: var(--grot);
+    font-size: 12px;
+    color: var(--grey);
+    line-height: 1.5;
+  }
+  .term:first-child {
+    border-top: 0;
+  }
+  .term .ic {
+    color: var(--ink);
+  }
+  .term b {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .sumrow {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-top: 14px;
+  }
+  .sumrow .l {
+    font-family: var(--grot);
+    font-size: 13px;
+    color: var(--grey);
+  }
+  .sumrow .v {
+    font-family: var(--grot);
+    font-size: 15px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .pilot-credit {
+    font-family: var(--grot);
+    font-size: 11.5px;
+    color: var(--grey2);
+    margin-top: 6px;
+    text-align: right;
+  }
 }
 
 /**
