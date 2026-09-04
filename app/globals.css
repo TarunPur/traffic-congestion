@@ -68,6 +68,70 @@
     color: var(--grey);
   }
 
+  /* shared screen chrome (topbar / step / headings / links) */
+  .topbar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 22px 0 0;
+    margin-bottom: 6px;
+  }
+  .iconbtn {
+    all: unset;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    margin-left: -7px;
+    color: var(--ink);
+    border-radius: 50%;
+    transition: background 0.15s;
+  }
+  .iconbtn:hover {
+    background: color-mix(in srgb, var(--ink) 7%, transparent);
+  }
+  .iconbtn:active {
+    transform: scale(0.9);
+  }
+  .topbar .step {
+    margin-left: auto;
+    font-family: var(--grot);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--grey2);
+  }
+  .h1 {
+    font-family: var(--serif);
+    font-size: 27px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.12;
+  }
+  .h1 + .said {
+    font-family: var(--grot);
+    font-size: 13px;
+    color: var(--grey);
+    margin-top: 9px;
+    line-height: 1.5;
+  }
+  .linkbtn {
+    all: unset;
+    cursor: pointer;
+    font-family: var(--grot);
+    font-size: 13px;
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: var(--hair);
+  }
+  .linkbtn:active {
+    opacity: 0.55;
+  }
+
   /* text field */
   .field {
     display: flex;
@@ -346,6 +410,55 @@
     opacity: 0.6;
   }
 
+  /* OTP cells (screen 02) */
+  .otp {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 9px;
+    margin-top: 30px;
+  }
+  .otp .cell {
+    all: unset;
+    box-sizing: border-box;
+    height: 64px;
+    width: 100%;
+    background: var(--paper2);
+    border: 1px solid var(--hair);
+    border-radius: 4px;
+    text-align: center;
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 30px;
+    color: var(--ink);
+    caret-color: var(--ink);
+  }
+  .otp .cell:focus {
+    border-color: var(--ink);
+    box-shadow: inset 0 0 0 1px var(--ink);
+  }
+  .otp[data-error="true"] .cell {
+    border-color: var(--accent);
+  }
+  .otp[data-error="true"] {
+    animation: otpShake 0.3s var(--ease);
+  }
+  @keyframes otpShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+  }
+  .resend {
+    font-family: var(--grot);
+    font-size: 12px;
+    color: var(--grey);
+    margin-top: 26px;
+    text-align: center;
+  }
+  .resend b {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
   /* reduced motion — settle every control transition */
   @media (prefers-reduced-motion: reduce) {
     .field,
@@ -354,6 +467,9 @@
     .rowline .tick,
     .cta {
       transition: none;
+    }
+    .otp[data-error="true"] {
+      animation: none;
     }
   }
 }

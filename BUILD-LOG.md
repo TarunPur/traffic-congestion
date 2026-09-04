@@ -103,3 +103,15 @@ Docker was down; I started it + local Supabase (`supabase start`) so RLS ran for
 - **Verify:** local `supabase start` applied both migrations + seed cleanly; **`supabase test db` → all 21 RLS tests PASS**; app tsc + lint + 54 Vitest green with generated types. **Parked:** apply to the remote project (needs keys) — local is fully verified.
 
 **Phase 2 checkpoint:** schema + RLS live on the local dev DB, 21 RLS tests green, seed loads. ▶ Phase 3 (auth) next.
+
+## Phase 3 — Auth (screens 01–02) 🔒 (verified live end-to-end)
+
+### P3.1 — 01 Login ✅ / P3.2 — 02 OTP ✅ (2026-09-04)
+- **01 Login** (`app/login/page.tsx`) — ClearingSplash brand moment + centred `+91`/10-digit field (`lib/phone.ts` format/validate), Continue (disabled <10 digits, loading "Sending code…"), oxblood error copy (invalid / send-fail / rate-limit). `signInWithOtp` via server action.
+- **02 OTP** (`app/verify/page.tsx` + `components/otp-input.tsx`) — 6-cell input (auto-advance, paste-fills-six, backspace, numeric), `verifyOtp`, wrong/expired error + shake (reduced-motion none), 24s resend countdown → Resend, Edit→01, "Sent to +91…" masked.
+- **Auth infra:** `app/login/actions.ts` server actions (sendOtp/resendOtp/verifyOtp) — pending phone in an **httpOnly cookie, never a URL** (privacy); SSR session cookies on verify. `middleware.ts` + `lib/supabase/middleware.ts` — `getUser()` session refresh + route protection (unauth→/login; authed off /login,/verify). Local test-OTP via `config.toml` (`[auth.sms.test_otp]` + dummy provider so phone auth is on without real SMS).
+- **TDD:** `tests/phone.test.ts` (4), `tests/otp-input.test.tsx` (6). 64 Vitest green.
+- **🔒 security-review:** zero high-severity (server-side OTP, httpOnly cookies, getUser protection, no secret leak); pass recorded. Flagged: gate `/dev/*` + no test-OTP in prod (PARKED).
+- **Verify:** **full flow driven live in Chrome** — unauth `/`→307→/login; login (test # 98123 45678) → send → /verify → code 424242 → session set → redirect to protected `/`. Console clean. Screenshots sent. tsc + lint clean.
+
+**Phase 3 checkpoint:** a phone can sign in end-to-end (local test OTP); sessions persist; protected routes enforced. ▶ Phase 4 (planner) next.

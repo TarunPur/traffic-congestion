@@ -7,10 +7,24 @@ major_version = 15
 
 [auth]
 enabled = true
+# allow the SSR cookie flow from the local dev origin
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["http://localhost:3000"]
+
 # Phone OTP via test numbers in the pilot (no SMS provider spend). See PARKED.md.
 [auth.sms]
 enable_signup = true
 enable_confirmations = false
 
+# Fixed codes for local/preview testing — test numbers short-circuit the provider (no real SMS).
 [auth.sms.test_otp]
-# Populated by Tarun for local/preview testing, e.g. 919999999999 = "123456".
+"919999900001" = "123456"
+"919812345678" = "424242"
+
+# Dummy provider so phone auth is ENABLED locally; test_otp numbers never actually call it.
+# Real SMS provider is configured in production only (PARKED.md).
+[auth.sms.twilio]
+enabled = true
+account_sid = "ACdummylocalonly"
+message_service_sid = "MGdummylocalonly"
+auth_token = "dummy-local-only"
