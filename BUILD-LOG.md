@@ -152,3 +152,7 @@ Shared `lib/trip-state.ts` (localStorage `useTrip`) carries origin/dest/arriveBy
 
 ### P5.5 — 07 Which part ✅ (2026-09-04)
 - `app/part/page.tsx` — Duotone masthead (dest name overlay) + radio parts list (SelectableRow role=radio) for a multi-part hub; Confirm building appends the part to trip.dest → `/ways`. Demo parts list (parked: real parts column). Reuses tested components. tsc + lint clean; visual verify batched with the ways/plan flow.
+
+### P5.6 — 08 Ways to go (LOCKED v8) ✅ (2026-09-04)
+- `app/ways/page.tsx` — POSTs `/api/plan` (trip origin/dest/arriveBy) → renders the 4 plans. LEAVE-BY `<SplitFlap>` board (recommended's first-leg dep) + Leave-now/Arrive-by `<Segmented>` (recomputes board/latest), `<FilterTabs>` (All/Metro/Bus/No auto-rickshaw), Recommended itinerary (MODE column + serif places + Scheduled/Live·est stamps + gutter), Other ways as expandable `.alt` with on-time/late status (late→oxblood+demoted via feasible-first sort, on-time→grey), finding-ways loading, no-coverage empty, "Times from Delhi transit data · updated 2 min ago" banner. Plans/rows → `/plan?name=`. Ported verbatim from 08-waystogo; not restyled.
+- **Verify:** tsc + lint + 84 Vitest green; live at `/ways` renders real planner data with the split-flap board + honesty stamps, console clean; screenshot sent.
