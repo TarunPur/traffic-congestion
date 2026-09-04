@@ -1,9 +1,10 @@
-# Clearline — Supabase local config. Project ref set on link (parked until keys arrive).
+# Clearline — Supabase local config. Linked to the remote "Traffic congestion" project
+# (ref sgwazmaiaydkgdizguxy) on 2026-09-04.
 project_id = "clearline"
 
 [db]
 port = 54322
-major_version = 15
+major_version = 17
 
 [auth]
 enabled = true
