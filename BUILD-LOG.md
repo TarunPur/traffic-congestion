@@ -115,3 +115,13 @@ Docker was down; I started it + local Supabase (`supabase start`) so RLS ran for
 - **Verify:** **full flow driven live in Chrome** — unauth `/`→307→/login; login (test # 98123 45678) → send → /verify → code 424242 → session set → redirect to protected `/`. Console clean. Screenshots sent. tsc + lint clean.
 
 **Phase 3 checkpoint:** a phone can sign in end-to-end (local test OTP); sessions persist; protected routes enforced. ▶ Phase 4 (planner) next.
+
+## Phase 4 — Planner adapter + Mappls (data spine) 🔒
+
+### P4.1 — Planner interface + stub ✅ (2026-09-04)
+- `lib/planner/types.ts` — the swap seam (ERD §5): `Planner.plan(origin,dest,{arriveBy})→Plan[]`, `Plan {name,totalMin,fare,timeVsCarMin,co2VsCar,legs[],projectedArrival,onTime}`, `Leg {mode,ride,place,depTime,durMin,arrangeYourself,line?,scheduled?,live?}`, `CAR_BASELINE` (52min/₹430/4.6kg).
+- `lib/planner/stub.ts` — `StubPlanner` returns the LOCKED sample plans (Fastest 41 / Recommended 49 @₹55 / Cheapest 60 / Greenest 47), ported verbatim from 08/09 + PRODUCT.md. Honesty baked in: Auto/Walk = arrangeYourself, Metro = scheduled (never live), Bus = live; timeVsCar from the car baseline; onTime computed vs arrive-by (Cheapest arrives 9:35 → the demo's late plan). Non-documented fares/CO₂ marked as sample (real = DMRC matrix + CO₂ model, P4.2/§12).
+- `app/api/plan/route.ts` 🔒 — auth-gated POST; creates the trip (owner), runs the planner, caches plans via service-role (plans is server-write-only), returns Plan[]. Engine swappable behind the interface.
+- **TDD:** `tests/planner.test.ts` (8) — shape, timeVsCar, projectedArrival, onTime at 9:30 & 9:20, and the honesty fields (arrangeYourself / scheduled-vs-live).
+- **🔒 security-review:** zero high-severity (auth→401 verified live; service-role used narrowly post-auth; input validated); pass recorded. Note: add rate-limiting in P11.
+- **Verify:** 72 Vitest green, tsc + lint clean; `/api/plan` returns 401 unauth. **Parked:** P4.2 real Mappls (Tarun's key) + P4.3 live-bus GTFS-RT feed.
