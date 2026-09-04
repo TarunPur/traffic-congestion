@@ -12,10 +12,14 @@ resume-at-Phase-6 point `ed86308`). Previous handoff is superseded by this file.
 
 ## 0. State in 30 seconds
 
-- Repo: `~/Desktop/The last case study/clearline-app` — git, branch `main`, **LOCAL ONLY, never `git push`** without Tarun's explicit OK.
+- Repo: `~/Desktop/The last case study/clearline-app` — git, branch `main`. **Pushed 2026-09-04** to
+  `github.com/TarunPur/traffic-congestion` (PUBLIC; force-pushed over the stub initial commit). Still
+  **never `git push` further without Tarun's explicit OK.** GitHub Actions `verify` (typecheck/lint/test/build)
+  runs on push and is **green**; pgTAP + Playwright are not in CI (need a Postgres service container).
 - Next.js 15 (App Router) + TypeScript (strict, **no `any`**) + Tailwind 3 + Supabase (`@supabase/ssr`) PWA. pnpm.
-- **Phases 0–11 DONE.** ~50 local commits total.
-- **140 Vitest + 27 pgTAP green; `pnpm typecheck` + `pnpm lint` + `pnpm build` all clean.**
+- **Phases 0–11 DONE.** ~53 commits total.
+- **140 Vitest + 27 pgTAP + 5 Playwright e2e green; `pnpm typecheck` + `pnpm lint` + `pnpm build` all clean.**
+  (Playwright: `pnpm test:e2e`, needs local Supabase up + `supabase db reset` first — see BUILD-LOG P11.5.)
 - Both journeys were **walked through screen-by-screen in a real Chrome tab** at the end of the run — console clean on every screen, real Supabase data, the commitment counter really incremented server-side, maps paint.
 - Source-of-truth docs live in `../` ("The last case study/"): `ERD.md`, `design/design.md` (❄️ frozen visual system), `design/journey1-timetable/BUILD-SPEC.md` (per-screen behaviour — §7 J1 01–10, §10 J1 More 11–16, §11–12 J2 17a–23), `PRODUCT.md`, `journey.md` (the 24-screen flow + nav map).
 - Progress log: `BUILD-LOG.md` (this repo). Human-gated blockers: `PARKED.md`.
