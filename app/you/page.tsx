@@ -6,18 +6,30 @@ import { AppShell } from "@/components/app-shell";
 import { TabBar } from "@/components/controls";
 import { Icon, type IconName } from "@/components/icon";
 import { createClient } from "@/lib/supabase/client";
-import type { PlaceRef } from "@/lib/planner/types";
+import type { Leg, PlaceRef } from "@/lib/planner/types";
 
 /**
  * 16 · You / Account (BUILD-SPEC §10·16) — the "You" tab. Identity header, recent trips (read
- * from `trips`, RLS owner-only), the More menu → 11–14, and sign-out → /login. Overlaps Profile
- * but is the account/menu hub — the tab-bar destination.
+ * from `trips` joined to its cached `plans`, RLS owner-only), the More menu → 11–14, and
+ * sign-out → /login. Overlaps Profile but is the account/menu hub — the tab-bar destination.
  */
 
 interface RecentTrip {
   origin: string;
   dest: string;
+  sub: string | null; // route/mode summary, e.g. "Yellow Line · 51 min" — null if no cached plan
   when: string;
+}
+
+/** "Yellow Line · 51 min" style summary from the trip's recommended plan, matching the locked
+ * design's 16-account.html. Falls back gracefully if no metro leg or no cached plan exists — see
+ * PIXEL-AUDIT.md §16 (this used to just repeat the date here instead of a route summary). */
+function routeSummary(legs: Leg[] | undefined, totalMin: number | undefined): string | null {
+  if (totalMin == null) return null;
+  const lined = legs?.find((l) => l.line);
+  const rideLeg = lined ?? legs?.find((l) => l.ride);
+  const label = lined?.line ? `${lined.line.charAt(0).toUpperCase()}${lined.line.slice(1)} Line` : rideLeg?.mode ?? null;
+  return label ? `${label} · ${totalMin} min` : `${totalMin} min`;
 }
 
 const MENU: { icon: IconName; name: string; sub: string; href: string }[] = [
@@ -62,16 +74,21 @@ export default function YouPage() {
       setPhone(user?.phone ?? null);
       const { data } = await sb
         .from("trips")
-        .select("origin_place, dest_place, created_at")
+        .select("origin_place, dest_place, created_at, plans(name, total_min, legs)")
         .order("created_at", { ascending: false })
         .limit(5);
       if (cancelled || !data) return;
       setRecent(
-        data.map((r) => ({
-          origin: (r.origin_place as unknown as PlaceRef)?.name ?? "—",
-          dest: (r.dest_place as unknown as PlaceRef)?.name ?? "—",
-          when: relativeDay(r.created_at),
-        })),
+        data.map((r) => {
+          const plans = (r.plans as unknown as { name: string; total_min: number; legs: Leg[] }[]) ?? [];
+          const recommended = plans.find((p) => p.name === "recommended") ?? plans[0];
+          return {
+            origin: (r.origin_place as unknown as PlaceRef)?.name ?? "—",
+            dest: (r.dest_place as unknown as PlaceRef)?.name ?? "—",
+            sub: routeSummary(recommended?.legs, recommended?.total_min),
+            when: relativeDay(r.created_at),
+          };
+        }),
       );
     })();
     return () => {
@@ -129,7 +146,7 @@ export default function YouPage() {
                   <span className="nm">
                     {r.origin} &rarr; {r.dest}
                   </span>
-                  <div className="sub">{r.when}</div>
+                  {r.sub ? <div className="sub">{r.sub}</div> : null}
                 </span>
                 <span className="when">{r.when}</span>
               </button>

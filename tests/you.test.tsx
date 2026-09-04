@@ -11,6 +11,17 @@ const TRIPS = [
     origin_place: { name: "DLF Cyber Hub" },
     dest_place: { name: "Hauz Khas Enclave" },
     created_at: new Date().toISOString(),
+    plans: [
+      {
+        name: "recommended",
+        total_min: 51,
+        legs: [
+          { mode: "Walk", ride: false, place: "Green Park Metro", depTime: "8:35", durMin: 8 },
+          { mode: "Metro", ride: true, place: "Yellow Line, Sikanderpur", depTime: "8:43", durMin: 26, line: "yellow" },
+        ],
+      },
+      { name: "fastest", total_min: 41, legs: [] },
+    ],
   },
 ];
 vi.mock("@/lib/supabase/client", () => ({
@@ -37,6 +48,13 @@ describe("16 You / Account", () => {
     render(<YouPage />);
     expect(await screen.findByText("Your account")).toBeInTheDocument();
     expect(screen.getByText(/\+91 98240 17722 · Free/)).toBeInTheDocument();
+  });
+
+  it("shows a real route/mode summary for a recent trip, not the date repeated (PIXEL-AUDIT.md §16)", async () => {
+    render(<YouPage />);
+    expect(await screen.findByText("Yellow Line · 51 min")).toBeInTheDocument();
+    // The date still appears exactly once, in its own position — not duplicated into .sub too.
+    expect(screen.getAllByText("Today")).toHaveLength(1);
   });
 
   it("routes the More menu rows to their sections", async () => {
