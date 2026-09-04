@@ -6,10 +6,25 @@ until Tarun approves.
 
 ## Open blockers
 
-- [ ] **Mappls key** — signup is Tarun's; confirm free/no-card/routing-in-tier. Until then the
-  Planner runs on the locked sample-plan stub (P4.1) — **every "Ways to go" result is canned, not
-  a real computed route.** This is the single biggest functional gap in the live app. Do not wire
-  P4.2 without the key.
+- [ ] **Real transit routing (Delhi bus + Metro) — the actual biggest gap, refined this
+  session (2026-09-05).** The Planner still runs on the locked sample-plan stub — every "Ways to
+  go" result is canned. Mappls (key obtained, see Resolved below) turned out to be road-routing
+  only, no transit profile — confirmed via a real test call, not an assumption. Google Directions
+  needs a card (ruled out). Transitous (free, no-card) confirmed via a real test call to have
+  **zero Delhi coverage** (sanity-checked against Berlin, which worked). Landed on: self-host a
+  router (OTP2/MOTIS) fed by Delhi's own official GTFS (`otd.delhi.gov.in` — bus AND, newly
+  discovered, DMRC Metro too), run for free via a scheduled GitHub Actions job that precomputes
+  routes into Supabase (no live server, per Tarun's no-cost directive) instead of an always-on
+  paid server. **Blocked right now on downloading the actual GTFS files** — `otd.delhi.gov.in`'s
+  download action is currently flaky (503/403/`ERR_INVALID_RESPONSE`, confirmed from both this
+  agent and Tarun's own browser); the site itself is up, just the file-generation backend isn't
+  reliable at the moment. Retry later. Full detail + exact next steps:
+  `HANDOFF-NEXT-AGENT.md` §1 and §5.
+- [ ] **Mappls: real but narrow — wire for the driving-comparison baseline only.** Key obtained
+  and verified working (Cloud App static key, in `.env.local` as `MAPPLS_STATIC_KEY`, not the
+  `MAPPLS_CLIENT_ID`/`SECRET` the scaffold assumed). Confirmed via a real API call it can supply
+  a real driving ETA/distance for the "X min faster than driving" line on screen 09, and
+  geocoding/autosuggest/snap-to-road — but not transit legs. Not yet wired into any adapter code.
 - [ ] **API rate-limiting** — none of the mutating routes (`/api/commute|profile|feedback|privacy|
   demand|eligibility|commit|managed*`) are rate-limited. Self-DoS / abuse only (all owner-scoped),
   but add a per-user/IP limiter before any public/open launch.
@@ -42,6 +57,9 @@ until Tarun approves.
   the first ~4 screens. Enabled with the same test-number pattern as local, valid to 2027-09-30.
 - [x] **Screen 17 corridor loading-state bug** — found + fixed during the 2026-09-05 live QA pass
   (commit `8af139e`). See "Resolved" below for detail.
+- [x] **Mappls signup + key** — DONE 2026-09-05. Cloud App created, static key obtained and
+  verified working. Superseded by the two refined items above (real routing engine choice, and
+  wiring Mappls for its narrower actual use).
 
 ## Doc discrepancies to reconcile (non-blocking; I used the frozen prototype)
 - [ ] **TripMap filter numbers** — ERD §2 lists `grayscale(.82) contrast(.95) brightness(1.05) sepia(.10)`,
@@ -64,6 +82,12 @@ until Tarun approves.
   is the real model; screen 07 uses a demo parts list until then.
 
 ## Resolved
+- Desktop-only iPhone bezel around the live app (a cosmetic wrapper for viewing the Vercel link
+  in a wide desktop browser) — built across 4 passes 2026-09-05, rejected each time, **fully
+  reverted** (commit `c39627e`, non-destructive `git revert` of the 4 build commits). `git diff`
+  confirmed `app/globals.css` + `components/app-shell.tsx` are byte-identical to before the
+  experiment. Nothing was ever pushed, so the live deploy was unaffected throughout. Not
+  revisited unless Tarun asks again.
 - Supabase project created (2026-09-04).
 - Screen 10 `.addrow` inline-span display:block bug — fixed 2026-09-04, commit `2a1e871`.
 - `next@15.1.6` CVE-2025-66478 (CVSS 10.0 RCE) — fixed 2026-09-04/05, bumped to 15.1.9, commit `c90bbdc`.
