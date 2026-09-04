@@ -149,3 +149,6 @@ Shared `lib/trip-state.ts` (localStorage `useTrip`) carries origin/dest/arriveBy
 ### P5.4 — 06 Set on map ✅ (2026-09-04)
 - `app/map/page.tsx` — full-height TripMap with **draggable** origin (ring) + dest (teardrop) pins, prefilled from trip or Delhi defaults; drag updates local state; Confirm points → writes trip origin/dest → `/ways`. Added `draggable`/`onOriginMove`/`onDestMove`/`autoFit` props to TripMap (autoFit off so dragging doesn't re-center).
 - **Verify:** tsc + lint + 84 Vitest green; map **paints in a real browser** (duotone south Delhi) with both pins, console clean; screenshot sent. (Draggable marker interaction is standard MapLibre.)
+
+### P5.5 — 07 Which part ✅ (2026-09-04)
+- `app/part/page.tsx` — Duotone masthead (dest name overlay) + radio parts list (SelectableRow role=radio) for a multi-part hub; Confirm building appends the part to trip.dest → `/ways`. Demo parts list (parked: real parts column). Reuses tested components. tsc + lint clean; visual verify batched with the ways/plan flow.
