@@ -175,6 +175,10 @@ export function TripMap({
         new maplibregl.LngLatBounds([origin.lng, origin.lat], [dest.lng, dest.lat]),
         { padding: 64, duration: 600, maxZoom: 14 },
       );
+    } else if (origin) {
+      map.easeTo({ center: [origin.lng, origin.lat], zoom: 14.2, duration: 600, offset: [0, -8] });
+    } else if (dest) {
+      map.easeTo({ center: [dest.lng, dest.lat], zoom: 14.2, duration: 600, offset: [0, -8] });
     }
   }
 

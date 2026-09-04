@@ -410,6 +410,56 @@
     opacity: 0.6;
   }
 
+  /* quick action row (screens 04/05) — use-current-location / set-on-map */
+  .quick {
+    display: flex;
+    gap: 22px;
+    margin-top: 14px;
+  }
+  .quick button {
+    all: unset;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-family: var(--grot);
+    font-size: 12.5px;
+    color: var(--ink);
+  }
+  .quick button svg {
+    color: var(--grey);
+  }
+  .quick button:hover svg {
+    color: var(--ink);
+  }
+  .quick button:active {
+    opacity: 0.6;
+  }
+  .quick button[data-state="denied"] {
+    color: var(--accent);
+  }
+  .quick button[data-state="denied"] svg {
+    color: var(--accent);
+  }
+
+  /* map confirmation band eyebrow pill (screens 04/05) */
+  .band-eyebrow {
+    position: absolute;
+    z-index: 2;
+    left: var(--m);
+    top: 12px;
+    font-family: var(--grot);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.17em;
+    text-transform: uppercase;
+    color: var(--grey);
+    background: color-mix(in srgb, var(--paper) 82%, transparent);
+    padding: 4px 9px;
+    border-radius: 20px;
+    box-shadow: inset 0 0 0 1px var(--hair);
+  }
+
   /* mode radio cards (screen 03) — ruled rows, ink rule when selected, radio dot */
   .modes {
     margin-top: 24px;
