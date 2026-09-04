@@ -2,9 +2,17 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-const push = vi.fn();
-const replace = vi.fn();
-vi.mock("next/navigation", () => ({ useRouter: () => ({ push, replace }) }));
+// CorridorPage's mount effect is keyed on [router]; the real useRouter() returns a
+// stable ref, so mock it that way too. A fresh {push,replace} per call would re-fire
+// the effect on every re-render and leak a late /api/corridor fetch past afterEach's
+// unstub (undici then rejects the relative URL — flaked CI on Node 22).
+const nav = vi.hoisted(() => {
+  const push = vi.fn();
+  const replace = vi.fn();
+  return { push, replace, router: { push, replace } };
+});
+vi.mock("next/navigation", () => ({ useRouter: () => nav.router }));
+const { push, replace } = nav;
 vi.mock("@/components/duotone", () => ({ Duotone: () => <div data-testid="duotone" /> }));
 
 function mockFetch(corridor: Record<string, unknown>, commitResult?: Record<string, unknown>) {
