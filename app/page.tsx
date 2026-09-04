@@ -175,7 +175,7 @@ export default function Home() {
       ) : state === "loading" ? (
         <p className="home-note">Loading this morning&rsquo;s times…</p>
       ) : state === "empty" ? (
-        <section className="empty">
+        <section className="onboard">
           <div className="t">No commute saved yet.</div>
           <div className="d">
             Plan a trip and save it as your commute — Clearline opens on it every morning, with the

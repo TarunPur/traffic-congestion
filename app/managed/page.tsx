@@ -98,7 +98,7 @@ export default function ManagedHomePage() {
         {state === "loading" ? (
           <p className="home-note">Loading your managed commute…</p>
         ) : (
-          <section className="empty">
+          <section className="onboard">
             <div className="t">No managed commute yet.</div>
             <div className="d">
               The managed commute is a reserved, door-to-door ride on covered corridors. Check

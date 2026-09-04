@@ -133,7 +133,7 @@ export default function ItineraryPage() {
           </span>
         </div>
         <div className="rule" />
-        <div className="itin">
+        <div className="itin mgd-legs">
           {plan.legs.map((l, i) => (
             <div key={i} className={`r${l.contracted ? " ride" : ""}`}>
               <span className="mode">{l.mode}</span>

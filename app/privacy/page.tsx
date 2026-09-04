@@ -137,7 +137,7 @@ export default function PrivacyPage() {
         </span>
       </div>
       <div className="rule" />
-      <div className="trips">
+      <div className="priv-trips">
         {rows.length === 0 ? (
           <p className="home-note" style={{ marginTop: 20 }}>
             Nothing saved yet — nothing to delete.
@@ -146,7 +146,7 @@ export default function PrivacyPage() {
           rows.map((r) => {
             const gone = removed.has(r.id);
             return (
-              <div key={r.id} className={`trip${gone ? " removed" : ""}`}>
+              <div key={r.id} className={`priv-trip${gone ? " removed" : ""}`}>
                 <span>
                   <span className="nm">{r.nm}</span>
                   <div className="sub">{r.sub}</div>

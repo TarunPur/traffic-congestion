@@ -1040,6 +1040,10 @@
     align-items: start;
     padding: 9px 0;
   }
+  /* J2 managed legs add the wider "SHUTTLE" mode label — give the mode column room (J1 v8 untouched) */
+  .mgd-legs .r {
+    grid-template-columns: 58px 1fr 48px;
+  }
   .itin .r {
     padding-left: 12px;
   }
@@ -1262,17 +1266,17 @@
     margin-top: 40px;
     text-align: center;
   }
-  .empty {
+  .onboard {
     margin-top: 44px;
     text-align: center;
   }
-  .empty .t {
+  .onboard .t {
     font-family: var(--serif);
     font-size: 19px;
     font-weight: 600;
     letter-spacing: -0.015em;
   }
-  .empty .d {
+  .onboard .d {
     font-family: var(--grot);
     font-size: 13px;
     color: var(--grey);
@@ -2029,10 +2033,10 @@
     transform: translateX(18px);
     background: var(--paper);
   }
-  .trips {
+  .priv-trips {
     margin-top: 6px;
   }
-  .trip {
+  .priv-trip {
     display: grid;
     grid-template-columns: 1fr auto;
     column-gap: 12px;
@@ -2040,22 +2044,22 @@
     min-height: 58px;
     border-top: 1px solid var(--hair);
   }
-  .trips .trip:first-child {
+  .priv-trips .priv-trip:first-child {
     border-top: 0;
   }
-  .trip .nm {
+  .priv-trip .nm {
     font-family: var(--serif);
     font-size: 15px;
     font-weight: 500;
     line-height: 1.25;
   }
-  .trip .sub {
+  .priv-trip .sub {
     font-family: var(--grot);
     font-size: 11px;
     color: var(--grey2);
     margin-top: 3px;
   }
-  .trip .del {
+  .priv-trip .del {
     all: unset;
     cursor: pointer;
     font-family: var(--grot);
@@ -2066,16 +2070,16 @@
     text-underline-offset: 3px;
     text-decoration-color: var(--hair);
   }
-  .trip .del:hover {
+  .priv-trip .del:hover {
     color: var(--ink);
   }
-  .trip .del:active {
+  .priv-trip .del:active {
     color: var(--accent);
   }
-  .trip.removed {
+  .priv-trip.removed {
     opacity: 0.4;
   }
-  .trip.removed .del {
+  .priv-trip.removed .del {
     pointer-events: none;
     text-decoration: none;
     color: var(--grey2);
