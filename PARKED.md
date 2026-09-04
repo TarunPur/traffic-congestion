@@ -39,6 +39,13 @@ until Tarun approves.
   re-derive" I used the prototype values. Reconcile the ERD text when convenient.
 - [ ] **design.md §1 grey table** — still lists pre-retune greys `#726c5e/#9a9384`; the authoritative
   retuned set `#5f5a4e/#877f6e` (ERD §2 + active CSS) is what's built. Docs cleanup only.
+- [ ] **🐞 Prototype has the same `.addrow` bug the app just fixed** — in
+  `design/journey1-timetable/16screensjourney1-working/10-savedhome.html` (~line 63–64),
+  `.addrow .tx .t` / `.d` are `<span>`s with no `display:block`, so the evening-commute title and
+  description render on one line. The `margin-top:2px` on `.d` is a no-op there, proving block was
+  intended. Fixed in the app (`app/globals.css`, commit `2a1e871`); **the frozen prototype is NOT
+  edited** — needs Tarun's OK since it's the visual contract. Screen 10 was never eyeballed in
+  review (handoff §0 open item 1), which is why it survived.
 
 ## Later refinements (non-blocking)
 - [ ] **Places `multi_part`/`parts` model** — screen 05→07 routing currently uses an `isMultiPart`
