@@ -125,7 +125,7 @@ export default function CorridorPage() {
       <div style={{ padding: "0 var(--m)" }}>
         <div className="masthead">
           <div className="k">Clearline · managed corridor</div>
-          <div className="rt">{c?.name ?? "Sikanderpur → DLF Cyber City"}</div>
+          <div className="rt">{c?.name ?? "Loading…"}</div>
         </div>
 
         <p className="said">
@@ -147,9 +147,11 @@ export default function CorridorPage() {
             <span style={{ width: `${pct}%` }} />
           </div>
           <div className="note">
-            {remaining > 0
-              ? `${remaining} more commitments open this corridor — and strengthen the case we take to your employer.`
-              : "The threshold is met — this corridor is opening."}
+            {!c
+              ? "Loading the corridor…"
+              : remaining > 0
+                ? `${remaining} more commitments open this corridor — and strengthen the case we take to your employer.`
+                : "The threshold is met — this corridor is opening."}
           </div>
         </div>
 
