@@ -573,7 +573,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      demand_aggregate: {
+        Args: never
+        Returns: {
+          mode: string
+          od_pair: string
+          signal_count: number
+          time_window: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

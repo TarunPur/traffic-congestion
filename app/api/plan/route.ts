@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 import { stubPlanner } from "@/lib/planner/stub";
+import { recordDemandSignal, generaliseOdPair, timeWindowFor } from "@/lib/demand";
 import type { PlaceRef } from "@/lib/planner/types";
 import type { Json } from "@/lib/supabase/types";
 
@@ -53,6 +54,18 @@ export async function POST(request: Request) {
 
   // Cache the plans server-side (plans is server-write-only).
   const admin = createServiceRoleClient();
+
+  // Anonymous demand signal — generalised OD only (no coords, no home), opt-out honoured. Best effort.
+  try {
+    await recordDemandSignal(supabase, admin, user.id, {
+      odPair: generaliseOdPair(body.origin.name, body.dest.name),
+      mode: plans.find((p) => p.name === "recommended")?.legs.find((l) => l.ride)?.mode ?? null,
+      timeWindow: timeWindowFor(body.arriveBy),
+    });
+  } catch {
+    /* demand recording is never allowed to fail a plan */
+  }
+
   const rows = plans.map((p) => ({
     trip_id: trip.id,
     name: p.name,
