@@ -20,6 +20,12 @@ export interface Leg {
   /** honesty: metro = scheduled only (never live); bus = live estimate. Exactly one is true for a ride. */
   scheduled?: boolean;
   live?: boolean;
+  /** frequency note for the leg detail expander (e.g. "every 3–4 min"). */
+  freq?: string;
+  /** platform/gate detail lines (screen 09 expander). Hand-curated demo-corridor only. */
+  detail?: string[];
+  /** intermediate stops (screen 09 expander). */
+  stops?: string[];
 }
 
 export type PlanName = "fastest" | "recommended" | "cheapest" | "greenest";

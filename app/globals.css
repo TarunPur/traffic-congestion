@@ -622,6 +622,300 @@
     color: var(--ink);
   }
 
+  /* ── Plan detail (screen 09) — ported verbatim ── */
+  .trip-line {
+    font-family: var(--grot);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--grey);
+    margin-top: 14px;
+    line-height: 1.4;
+  }
+  .trip-line b {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .hero {
+    margin-top: 14px;
+  }
+  .hero .big {
+    display: flex;
+    align-items: baseline;
+    gap: 9px;
+  }
+  .hero .big .n {
+    font-family: var(--serif);
+    font-size: 52px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 0.9;
+    text-shadow: var(--press);
+  }
+  .hero .big .un {
+    font-family: var(--grot);
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--grey);
+  }
+  .hero .stats {
+    display: flex;
+    gap: 32px;
+    margin-top: 18px;
+    padding-top: 15px;
+    border-top: 1px solid color-mix(in srgb, var(--ink) 34%, transparent);
+  }
+  .hero .stats .s .n {
+    font-family: var(--grot);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--grey);
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+  .hero .stats .s .l {
+    font-family: var(--grot);
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--grey2);
+    margin-top: 3px;
+  }
+  .vscar {
+    margin-top: 20px;
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--grey);
+    line-height: 1.34;
+    letter-spacing: -0.005em;
+    text-shadow: var(--press);
+  }
+  .vscar .fig {
+    font-family: var(--grot);
+    font-weight: 600;
+    font-size: 1.12em;
+    font-variant-numeric: tabular-nums lining-nums;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+  .jbar {
+    margin-top: 28px;
+  }
+  .jbar-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+  .jbar-key {
+    font-family: var(--grot);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--grey2);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .jbar-key i {
+    width: 16px;
+    height: 9px;
+    display: inline-block;
+    background: var(--paper2);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ink) 42%, transparent);
+  }
+  .jbar-track {
+    display: flex;
+    gap: 3px;
+    height: 12px;
+    margin-top: 12px;
+  }
+  .jbar-track .sg {
+    min-width: 8px;
+  }
+  .jbar-track .sg.ride {
+    background: var(--ink);
+  }
+  .jbar-track .sg.self {
+    background: var(--paper2);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ink) 42%, transparent);
+  }
+  .jbar-labs {
+    display: flex;
+    gap: 3px;
+    margin-top: 10px;
+  }
+  .jbar-labs .lb {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .jbar-labs .lb .m {
+    display: block;
+    font-family: var(--grot);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--grey2);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+  .jbar-labs .lb .d {
+    display: block;
+    font-family: var(--grot);
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-top: 4px;
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+  .legs-h {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-top: 30px;
+  }
+  .legs-h .lab {
+    letter-spacing: 0.16em;
+  }
+  .legs-h .fare {
+    font-family: var(--grot);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--grey2);
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+  .legs-h .fare b {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .r .place .tagself {
+    margin-top: 4px;
+    display: block;
+    font-size: 9px;
+    letter-spacing: 0.13em;
+  }
+  .r .fq .ar {
+    font-family: var(--grot);
+    font-size: 12px;
+    color: var(--grey);
+  }
+  .r .place .stamp {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 8px 3px 7px;
+    border: 1px solid var(--hair);
+    margin-top: 8px;
+  }
+  .r .place .stamp .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: transparent;
+    box-shadow: inset 0 0 0 1.4px var(--grey2);
+    flex: none;
+  }
+  .r .place .stamp .st {
+    font-family: var(--grot);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+  .stops-t {
+    all: unset;
+    cursor: pointer;
+    margin-top: 10px;
+    font-family: var(--grot);
+    font-size: 10.5px;
+    font-weight: 500;
+    color: var(--ink);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .stops-t .cx {
+    display: inline-flex;
+    transition: transform 0.22s var(--ease);
+  }
+  .stops-t[aria-expanded="true"] .cx {
+    transform: rotate(180deg);
+  }
+  .stops-wrap {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.3s var(--ease);
+  }
+  .stops-wrap.open {
+    grid-template-rows: 1fr;
+  }
+  .stops-in {
+    overflow: hidden;
+  }
+  .stops .det {
+    display: block;
+    font-family: var(--grot);
+    font-size: 10.5px;
+    color: var(--grey);
+    line-height: 1.5;
+    margin-top: 8px;
+  }
+  .stops ol {
+    list-style: none;
+    margin: 10px 0 4px;
+    padding: 2px 0 2px 14px;
+    border-left: 1px solid var(--hair);
+  }
+  .stops li {
+    font-family: var(--grot);
+    font-size: 11px;
+    color: var(--grey);
+    padding: 3px 0;
+  }
+  .upsell {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 13px var(--m);
+    border-top: 1px solid var(--hair);
+  }
+  .upsell .u-l {
+    font-family: var(--grot);
+    font-size: 12px;
+    color: var(--grey);
+    line-height: 1.4;
+  }
+  .upsell .u-l b {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .upsell .u-b {
+    all: unset;
+    cursor: pointer;
+    font-family: var(--grot);
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--ink);
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .stops-wrap,
+    .stops-t .cx {
+      transition: none;
+    }
+  }
+
   /* ── Ways to go (screen 08, LOCKED v8) — ported verbatim ── */
   .rule {
     height: 0;

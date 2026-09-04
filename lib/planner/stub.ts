@@ -35,7 +35,19 @@ const SAMPLE: StubPlanSpec[] = [
     co2VsCar: 3.6, // documented (09 count-up)
     legs: [
       { mode: "Auto", ride: false, place: "Hauz Khas Metro", depTime: "8:35", durMin: 6, arrangeYourself: true },
-      { mode: "Metro", ride: true, place: "Yellow Line, Sikanderpur", depTime: "8:43", durMin: 24, arrangeYourself: false, line: "yellow", scheduled: true },
+      {
+        mode: "Metro",
+        ride: true,
+        place: "Yellow Line, Sikanderpur",
+        depTime: "8:43",
+        durMin: 24,
+        arrangeYourself: false,
+        line: "yellow",
+        scheduled: true,
+        freq: "every 3–4 min",
+        detail: ["Board Platform 1 · towards Millennium City Centre", "Enter Gate 2 · exit Gate 1 at Sikanderpur"],
+        stops: ["Malviya Nagar", "Saket", "Qutab Minar", "Chhatarpur", "Sultanpur", "Ghitorni", "Arjan Garh", "Guru Dronacharya", "Sikanderpur"],
+      },
       { mode: "Auto", ride: false, place: "DLF Cyber Hub, Bldg 10", depTime: "9:07", durMin: 9, arrangeYourself: true },
     ],
   },
