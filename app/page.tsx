@@ -55,6 +55,7 @@ export default function Home() {
   const [commute, setCommute] = useState<SavedCommute | null>(null);
   const [plans, setPlans] = useState<Plan[] | null>(null);
   const [state, setState] = useState<"loading" | "ready" | "empty" | "error">("loading");
+  const [hasManaged, setHasManaged] = useState(false);
   const [leftMin, setLeftMin] = useState<number | null>(null);
   const tick = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -64,6 +65,12 @@ export default function Home() {
     let cancelled = false;
     (async () => {
       try {
+        fetch("/api/managed")
+          .then((r) => (r.ok ? r.json() : null))
+          .then((d: { plan: unknown } | null) => {
+            if (!cancelled && d?.plan) setHasManaged(true);
+          })
+          .catch(() => {});
         const res = await fetch("/api/commute");
         if (!res.ok) throw new Error("commute failed");
         const { commutes } = (await res.json()) as { commutes: SavedCommute[] };
@@ -154,11 +161,15 @@ export default function Home() {
           <div className="k">Clearline · managed</div>
           <div className="t">We don&rsquo;t run your corridor yet.</div>
           <div className="d">
-            Clearline manages a reserved, door-to-door commute — corridor by corridor, as enough
-            people opt in. Add yours and we&rsquo;ll tell you the day it opens on your route.
+            {hasManaged
+              ? "Your managed commute is set up — open it to see today’s pickup and start your trip."
+              : "Clearline manages a reserved, door-to-door commute — corridor by corridor, as enough people opt in. Add yours and we’ll tell you the day it opens on your route."}
           </div>
-          <Cta className="mt-[26px]" onClick={() => router.push("/eligibility")}>
-            Add my commute to the list
+          <Cta
+            className="mt-[26px]"
+            onClick={() => router.push(hasManaged ? "/managed" : "/eligibility")}
+          >
+            {hasManaged ? "Open my managed commute" : "Add my commute to the list"}
           </Cta>
         </section>
       ) : state === "loading" ? (

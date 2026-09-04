@@ -47,6 +47,9 @@ function mockFetch(commutes: unknown[]) {
     if (String(url).includes("/api/commute")) {
       return { ok: true, json: async () => ({ commutes }) } as Response;
     }
+    if (String(url).includes("/api/managed")) {
+      return { ok: true, json: async () => ({ setup: null, plan: null }) } as Response;
+    }
     if (String(url).includes("/api/plan")) {
       return { ok: true, json: async () => ({ plans: PLANS }) } as Response;
     }
