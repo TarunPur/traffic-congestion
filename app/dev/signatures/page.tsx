@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { SplitFlap } from "@/components/split-flap";
+import { Duotone } from "@/components/duotone";
 import { Cta } from "@/components/controls";
 
 /** P1 signatures gallery (dev-only) — grows to hold all four signature components. */
@@ -28,6 +29,19 @@ export default function SignaturesDevPage() {
 
       <H>SplitFlap — compact</H>
       <SplitFlap value="41" size="compact" aria-label="41 minutes" />
+
+      <H>Duotone — masthead</H>
+      <Duotone
+        src="/img/dlf-cyberhub.jpg"
+        alt="DLF Cyber Hub, Gurgaon"
+        credit="Slyronit · CC BY-SA 4.0"
+        canvasWidth={784}
+        canvasHeight={300}
+        crop={{ sxf: 0.02, syf: 0.05, swf: 0.96, shf: 0.62 }}
+        options={{ contrast: 1.9, max: 0.86 }}
+        className="-mx-m"
+        style={{ height: 172 }}
+      />
     </main>
   );
 }

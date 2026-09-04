@@ -65,3 +65,8 @@ Bound by ERD.md + the frozen docs. `../design/journey1-timetable/16screensjourne
 - `components/split-flap.tsx` — React structure + imperative flip ported from `CL.splitflap`/`buildFlaps`/`flipTo`: paper2 tiles, serif digits, centre hinge, `-90deg` fold `.13s` step, flips on mount + change, plain-glyph colon, hero 44×62 / compact 33×47. Reduced-motion sets final with no animation. CSS ported verbatim into globals (kept outside @layer for the `@keyframes foldDown`). Reusable `lib/use-reduced-motion.ts`.
 - **TDD:** `tests/split-flap.test.tsx` (6) — cell count/colon, aria-label, reduced-motion settle (no animate class), value change, compact modifier, animated path settles under fake timers.
 - **Verify:** 41/41 tests, tsc + lint clean; `/dev/signatures` shows the board flipping (captured mid-flip), console clean; screenshot sent.
+
+### P1.4 — Duotone 🎯 ✅ (2026-09-04)
+- `lib/duotone.ts` — pure `duotonePixels()` transform ported from CL.duotone (paper↔ink, contrast 1.9 / pivot .46 / max .86). `components/duotone.tsx` — canvas renders the two-tone map, top/bottom vignette into paper (ported masthead gradient), credit line. Ships `public/img/dlf-cyberhub.jpg` (CC BY-SA 4.0, credit "Slyronit").
+- **TDD:** `tests/duotone.test.ts` (5) — bright→paper, dark→ink capped at max, monochrome ramp, max scaling, buffer length. (Canvas paint verified live, not in jsdom.)
+- **Verify:** 46/46 tests, tsc + lint clean; masthead paints monochrome + vignetted in a real browser with credit visible, console clean (no CORS/taint); screenshot sent.
