@@ -42,3 +42,6 @@ pnpm-debug.log*
 # supabase local CLI artifacts
 supabase/.branches/
 supabase/.temp/
+
+# playwright auth state (per-run login)
+tests/e2e/.auth/
