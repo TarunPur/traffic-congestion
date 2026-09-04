@@ -1,158 +1,205 @@
 # Clearline — Handoff for the next build agent
 
-**You are resuming a real app build. Phases 0–5 are DONE. Start at Phase 6.**
-Read this whole file once, then follow it literally. Do not redesign anything. Do not skip steps.
+**The app build is COMPLETE. All 24 screens are live, both journeys pass end to end, everything
+is green locally, nothing is pushed.** Your job is the human-gated finish (deploy prep) + any
+polish/bugfix Tarun asks for — NOT rebuilding screens. Read this whole file once.
+
+Last updated: 2026-09-04, end of the Phases 6–11 autonomous run (25 build commits since the
+resume-at-Phase-6 point `ed86308`). Previous handoff is superseded by this file. Run
+`git log --oneline` for the exact HEAD.
 
 ---
 
-## 0. What this is (30-second orientation)
+## 0. State in 30 seconds
 
-- Repo: `~/Desktop/The last case study/clearline-app` (git, branch `main`, **local only — never `git push`**).
-- It's a Next.js 15 (App Router) + TypeScript (strict, **no `any`**) + Tailwind + Supabase PWA.
-- You build **real screens** by **porting exactly** from the FROZEN prototype at
-  `../design/journey1-timetable/16screensjourney1-working/` (HTML files `01-…`–`23-…` + `clearline.css` + `clearline.js`).
-- Source-of-truth docs (in `../`, i.e. "The last case study/"): `IMPLEMENTATION-PLAN.md` (the task list),
-  `ERD.md` (engineering contract), `design/design.md` (frozen visual system), `design/journey1-timetable/BUILD-SPEC.md`
-  (per-screen behaviour, §7/§9–§12), `PRODUCT.md`, `journey.md`.
-- Progress + decisions are logged in `BUILD-LOG.md` (this repo). Things blocked on the human are in `PARKED.md`.
+- Repo: `~/Desktop/The last case study/clearline-app` — git, branch `main`, **LOCAL ONLY, never `git push`** without Tarun's explicit OK.
+- Next.js 15 (App Router) + TypeScript (strict, **no `any`**) + Tailwind 3 + Supabase (`@supabase/ssr`) PWA. pnpm.
+- **Phases 0–11 DONE.** ~50 local commits total.
+- **140 Vitest + 27 pgTAP green; `pnpm typecheck` + `pnpm lint` + `pnpm build` all clean.**
+- Both journeys were **walked through screen-by-screen in a real Chrome tab** at the end of the run — console clean on every screen, real Supabase data, the commitment counter really incremented server-side, maps paint.
+- Source-of-truth docs live in `../` ("The last case study/"): `ERD.md`, `design/design.md` (❄️ frozen visual system), `design/journey1-timetable/BUILD-SPEC.md` (per-screen behaviour — §7 J1 01–10, §10 J1 More 11–16, §11–12 J2 17a–23), `PRODUCT.md`, `journey.md` (the 24-screen flow + nav map).
+- Progress log: `BUILD-LOG.md` (this repo). Human-gated blockers: `PARKED.md`.
+- Frozen prototype ported from: `../design/journey1-timetable/16screensjourney1-working/` (`01-…`–`23-…` HTML + `clearline.css` + `clearline.js`).
 
-## 1. Non-negotiable rules (violating any = a build defect)
+---
 
-1. **Port, don't restyle.** Reproduce the prototype exactly. If a class/value exists in `clearline.css`, copy it verbatim.
-2. **Reuse the built components** — never re-invent them. They live in `components/`:
-   `Icon`, `AppShell`, and from `components/controls.tsx`: `Cta, Segmented, FilterTabs, TextField, SelectableRow, RuledRows, TabBar`;
-   plus the 4 signatures `SplitFlap, Duotone, ClearingSplash, TripMap`, and `OtpInput`.
-3. **Honesty everywhere:** live-vs-scheduled labels, "you arrange this" on auto/walk legs, source+freshness lines,
-   J2 "committed window" (never "guaranteed"). Never fabricate traction/counts.
-4. **Oxblood `--accent #8f342a` is RISK ONLY** (errors/late/disruption/emergency). Never for selection/positive/decoration.
-5. **No money in the pilot.** `bookings.billing_on` stays false; no payment SDK.
-6. **RLS on every user table; eligibility decided server-side; k-anon N≥5; home never exposed.**
-7. **TDD** — write the test first. **No `any`** (lint errors on it).
-8. **NO-GO** — a product screen isn't "done" until it's verified live in Chrome (console clean) and a screenshot is
-   sent to the human. Never claim a screen done off tests alone.
+## 1. Non-negotiable rules (still in force — violating any = a defect)
+
+1. **Port, don't restyle.** The prototype is the visual contract. **Screen 08 "Ways to go" (v8) is LOCKED — additive only, never restyle** (its `.r` / `.leaveby` / `.alt` / `.jbar` CSS is shared; scope new CSS instead of widening those).
+2. **Reuse the built components.** `components/`: `Icon` (+ `mail`, `phone` added this run), `AppShell` (now renders `OfflineBanner` on every screen), `OfflineBanner`; from `components/controls.tsx`: `Cta, Segmented, FilterTabs, TextField, SelectableRow, RuledRows, TabBar`; signatures `SplitFlap, Duotone, ClearingSplash, TripMap`; `OtpInput`.
+3. **Honesty everywhere:** live-vs-scheduled labels, "you arrange this" on auto/walk legs, source+freshness lines, J2 "committed window" (never "guaranteed"), no fabricated traction/counts (the corridor counter is the real `commitments` aggregate — seed starts at 0), driver/vehicle on `/trip` are labelled "sample data for the pilot".
+4. **Oxblood `--accent #8f342a` is RISK ONLY** (errors / late / disruption / delete-all / Emergency). Never for selection / positive / decoration. Metro line colours (`LINECOL`) are the narrow §1a exception — transit graphics only.
+5. **No money in the pilot.** `bookings.billing_on` stays false; no payment SDK. `POST /api/managed/booking` never sets `billing_on` (DB default false + RLS `bookings_owner_reserve` rejects `true` — proven in `j2_rls_test.sql`).
+6. **RLS on every user table; `partnered` + `committed_count` + `billing_on` decided server-side; k-anon N≥5 on demand; home never in a demand signal (generalised OD only).**
+7. **TDD** — test first. **No `any`** (lint errors on it). `@typescript-eslint/no-explicit-any: error` is enforced.
+8. **NO-GO** — a screen isn't "done" until it's verified live in Chrome (console clean) and Tarun has seen it. Never claim done off tests alone. ([[feedback_claiming_done_before_user_can_see]])
+9. **🔒 High-stakes paths** (auth, RLS/policies, `app/api/*`, `.env*`, `supabase/migrations|functions`, `.sql`): review the staged diff for security yourself (the `security-review` skill's auto-diff fails with no git remote), then record the gate pass — `node ~/.claude/hooks/security-gate.mjs --record-pass` — or the `PreToolUse` hook blocks the commit.
+
+---
 
 ## 2. Environment — do this FIRST every session
 
 ```bash
 cd "~/Desktop/The last case study/clearline-app"
-supabase status || supabase start      # local Supabase MUST be running (Docker must be up: `open -a Docker` then wait)
+open -a Docker                         # wait until it's up
+supabase status || supabase start      # local Supabase MUST be running
+supabase db reset                      # re-applies migrations 0001–0004 + seed.sql (see gotcha ⚠️4)
 pnpm install                           # if node_modules missing
 pnpm dev                               # http://localhost:3000
 ```
-- `.env.local` already points at LOCAL Supabase (well-known local keys; fine). Do NOT put real remote keys here.
-- **Auth is required for most routes.** Test login: phone `98123 45678`, OTP code `424242`
-  (test numbers live in `supabase/config.toml [auth.sms.test_otp]`; a dummy provider is configured so no SMS is sent).
-- If the DB schema/seed seems missing after a restart: `supabase db reset` (re-applies migrations + `supabase/seed.sql`).
 
-## 3. The exact loop for EVERY screen/task (follow in order)
+- `.env.local` (gitignored) → **LOCAL** Supabase, well-known local keys. Mappls keys are empty → the Planner runs on the **locked sample-plan stub** (`lib/planner/stub.ts`). `LIVE_FULFILMENT_SOURCE=diy` → `/trip` steps are schedule-derived (no real driver feed).
+- **Auth required for every route except** `/login /verify /api/* /dev/*` (and `/dev/*` is a 404 in production). Test login: phone **`98123 45678`**, OTP **`424242`** (`supabase/config.toml [auth.sms.test_otp]`, dummy provider — no SMS sent).
+- Never put real remote keys in `.env.local` on this machine — they go in Vercel env at deploy time (PARKED).
 
-1. **Read the prototype file** for the screen (e.g. `../design/journey1-timetable/16screensjourney1-working/10-savedhome.html`)
-   AND its spec in `BUILD-SPEC.md` (§7 for J1 screens, §9–§12 for states/J2). Grep the HTML for the classes + JS logic.
-2. **Port any screen-specific CSS** verbatim into `app/globals.css` inside `@layer components` (keep the existing pattern;
-   search the file for a similar block). Reuse existing tokens/classes; don't invent values.
-3. **Write the test first** (`tests/<name>.test.tsx`), then the route (`app/<route>/page.tsx`). Reuse components (rule 2).
-   Mock `next/navigation` (`useRouter`), `@/lib/trip-state`, and heavy components (`TripMap`, `Duotone`) in tests as needed
-   (see `tests/from.test.tsx`, `tests/choose.test.tsx` for the pattern).
-4. **Verify:** `pnpm typecheck && pnpm lint && pnpm test` must all be green.
-   For DB/RLS changes also run `supabase test db` (pgTAP in `supabase/tests/`).
-5. **Live NO-GO:** `pnpm dev`, log in if needed, open the route in Chrome (use the browser tools), screenshot,
-   read console (must be clean), then `SendUserFile` the screenshot to the human with a one-line caption.
-   - MapLibre note: the map only composites in a *real* visible browser tab. In the automation tab it can render blank —
-     click the map's zoom "+" control once to kick a repaint, then screenshot. This is expected, not a bug.
-6. **Commit locally** (small, per task). Message: `PX.Y: NN <screen> — <one line>` + the two trailer lines used on every commit
-   (copy them from `git log -1`). Update `BUILD-LOG.md` with a short entry.
-7. **🔒 High-stakes paths** (anything touching auth, RLS/policies, `app/api/*`, `.env*`, `supabase/migrations|functions`, `.sql`):
-   BEFORE committing, review the staged diff for security (the `security-review` skill's auto-diff fails with no git remote —
-   just review the staged files yourself), then record the gate pass:
-   `node ~/.claude/hooks/security-gate.mjs --record-pass` (a PreToolUse hook blocks the commit otherwise).
+---
 
-## 4. What already exists (reuse these — do not rebuild)
+## 3. What's built (all live, all committed)
 
-- **State:** `lib/trip-state.ts` (`useTrip`/`getTrip`/`setTrip`, localStorage) carries origin/dest/arriveBy/service across screens.
-- **Search:** `lib/use-places-search.ts` (debounced query over the `places` table) + `iconForPlace` + `isMultiPart`.
-- **Planner:** `lib/planner/types.ts` (`Planner`, `Plan`, `Leg`, `CAR_BASELINE`, `hmToMin`) + `lib/planner/stub.ts`
-  (`stubPlanner`, the locked sample plans) + `app/api/plan/route.ts` (auth-gated POST → Plan[]).
-- **Helpers:** `lib/arrive-by.ts`, `lib/use-count-up.ts`, `lib/use-reduced-motion.ts`, `lib/tokens.ts` (`TOKENS`, `LINECOL`,
-  `lineColour`, `FEEDBACK_TONES`).
-- **Auth:** `app/login/actions.ts` (server actions), `middleware.ts` (route protection — add new authed routes are protected
-  by default; public routes are whitelisted in `lib/supabase/middleware.ts` — `/login`, `/verify`, `/api/*`, `/dev/*`).
-- **DB clients:** `lib/supabase/{client,server}.ts`. Schema + RLS in `supabase/migrations/` (J1 = `…0001`, J2 = `…0002`),
-  types in `lib/supabase/types.ts` (regenerate after a migration: `supabase gen types typescript --local > lib/supabase/types.ts`).
-- **Routes so far:** `/login /verify /choose /from /to /map /part /ways /plan` (+ `/dev/*` galleries, `/api/health`, `/api/plan`).
+### Routes — `app/**/page.tsx` (24 product screens + 3 dev galleries)
 
-## 5. Remaining work — Phases 6–11 (build in this order)
+| # | Route | Screen | Notes |
+|---|---|---|---|
+| 01 | `/login` | Login | phone OTP, ClearingSplash brand moment |
+| 02 | `/verify` | OTP | 6-cell OtpInput, oxblood error |
+| 03 | `/choose` | Choose service | Free → `/from` · Managed → `/eligibility` |
+| 04 | `/from` | Where from | live search over seeded `places`, `Use current location`, `Set on map` |
+| 05 | `/to` | Where to | search + arrive-by bar (±15, default 09:30) |
+| 06 | `/map` | Set on map | draggable MapLibre pins |
+| 07 | `/part` | Which part | Duotone masthead + radio parts (multi-part POIs; heuristic — parked) |
+| 08 | `/ways` | Ways to go | **LOCKED v8** — 4 plans from `/api/plan`, LEAVE split-flap board, filters, on-time grey / late oxblood |
+| 09 | `/plan` | Plan detail | `?name=`, count-ups, journey-at-a-glance bar (§1a line-colour trunk + §1b open ends), leg expander |
+| 10 | `/` | Saved / home | GET `/api/commute` → POST `/api/plan`; leave-by split-flap, later departures, disruption banner, empty onboarding, Myself/Clearline toggle (→ `/managed` if a managed commute exists, else J2 upsell), TabBar |
+| 11 | `/profile` | Profile | 5 progressive `profile_fields` rows, inline editors → PUT `/api/profile` |
+| 12 | `/support` | Support | single-open FAQ (honesty spine, verbatim), action rows |
+| 13 | `/privacy` | Privacy & data | demand toggle (PATCH `/api/privacy`), per-row delete, **two-step oxblood delete-all** |
+| 14 | `/about` | About | ClearingSplash + source icon/badge matrix + "pre-launch, no fabricated traction" |
+| 15 | `/feedback` | Feedback | 1–5 diverging tone-underline scale (`FEEDBACK_TONES`, never oxblood) → POST `/api/feedback` |
+| 16 | `/you` | You / Account | masked phone, recent trips (RLS owner), More menu → 11–14, sign-out → `/login` |
+| 17a | `/eligibility` | Eligibility | **OR-gate. `POST /api/eligibility` decides `partnered` server-side by email-domain vs `partner_domains` (unforgeable — proven by `tests/api-eligibility.test.ts`).** partnered → `/setup`, else → `/corridor` |
+| 17 | `/corridor` | Corridor & waitlist | Duotone masthead, real `committed_count` / threshold / `.prog` bar, `POST /api/commit` (recomputes count server-side, opens at threshold), "intent not money" |
+| 18 | `/corridor-live` | Corridor is live | the one dramatic moment — clearing-line resolve, reduced-motion settles; "Set up" → `/setup`, "Later" → `/` |
+| 19 | `/setup` | Managed setup | home/tower prefill from `profile_fields`, ±15 steppers, Mon–Fri chips → `POST /api/managed` writes `managed_setups` + builds the plan |
+| 20 | `/itinerary` | Itinerary card | boarding-pass **stub** (paper2 band + dashed perforation, NOT a card), LEAVE split-flap, all legs `.tl.mgd` (filled ink square) incl. AC-shuttle trunk, `.mgd-legs .r` wider mode column for "SHUTTLE" |
+| 21 | `/booking` | Booking & pass | monthly/per-day rows + trip Segmented, "₹0 · pilot", **NO payment SDK** → `POST /api/managed/booking` |
+| 22 | `/trip` | Live trip | TripMap band, split-flap ETA, driver (labelled sample), step tracker (done/now/upcoming), held line, Share (copy link), **Emergency (oxblood + honest copy)**. **Supabase Realtime** on `managed_trips` + 30s re-read; steps schedule-derived |
+| 23 | `/managed` | Managed home | mirrors J1 home; assigned ride leads (`.tl.mgd` "Assigned"), Start → `/trip`, Myself → `/`, TabBar |
+| — | `/dev/{controls,signatures,tokens}` | galleries | **404 in production** (P11.1); dev-only |
 
-For each screen: read its prototype HTML + `BUILD-SPEC.md`, port, TDD, verify live, screenshot, commit. Suggested route names in ().
+### API routes — `app/api/**/route.ts` (all auth-gated, `user_id` from the SSR session, RLS backstop)
 
-### Phase 6 — J1 home & shell
-- **10 Saved / home** (`/` — replace the placeholder home). "My rides" hero (leave-by `SplitFlap`, next departures),
-  add-evening nudge, **bottom `TabBar` (Home/Plan/You)**, save-commute → writes `saved_commutes` (RLS owner-only; CTA restates
-  "Saved as your commute"), J2 upsell → `/eligibility`, disruption banner, empty state. Port `10-savedhome.html`.
-  → Wire screen 09's + 08's "Save this plan"/"Set as my commute" to actually insert `saved_commutes`, then land here.
-  🔒 (writes saved_commutes) — security-review before commit.
-- **16 You / Account** (`/you`) — `TabBar` shell, More menu rows → 11–14, sign-out → `/login` (`supabase.auth.signOut()`). Port `16-account.html`.
+`/api/plan` (POST — creates `trips`, stub planner, caches `plans` via service-role, records a generalised demand signal) ·
+`/api/commute` (GET list / POST save `saved_commutes`) ·
+`/api/profile` (GET / PUT `profile_fields`, key whitelist) ·
+`/api/feedback` (POST `feedback`, rating 1–5) ·
+`/api/privacy` (GET rows+pref / PATCH demand / DELETE `?id=&kind=` or `?all=1`) ·
+`/api/demand` (POST one signal via service-role, no user linkage, opt-out honoured) ·
+`/api/eligibility` (GET own / POST — **`partnered` server-derived only**, `eligibility` upsert via service-role) ·
+`/api/corridor` (GET demo corridor + own commitment) ·
+`/api/commit` (POST — upsert `commitment`, recompute `committed_count`, open at threshold — all server-side) ·
+`/api/managed` (GET latest setup+plan / POST setup → `managed_setups` + `managed_plans` via service-role) ·
+`/api/managed/booking` (POST `bookings` — `billing_on` never set) ·
+`/api/managed/trip` (GET — create-or-get today's `managed_trips` via service-role, schedule-derived steps) ·
+`/api/health` (pre-existing).
 
-### Phase 7 — J1 More + demand (🔒 on 13 + demand)
-- **11 Profile** (`/profile`) — progressive `profile_fields` rows (all optional, "Not set"), inline editors; home/work feed
-  `saved_commutes` + J2 prefill. Port `11-profile.html`. 🔒 (profile_fields).
-- **12 Support** (`/support`) — single-open accordion (verbatim honesty answers) → 15/report/contact. Port `12-support.html`.
-- **13 Privacy & data** (`/privacy`) 🔒 — "what we keep" list, demand toggle (`demand_prefs`), per-trip delete,
-  **two-step oxblood delete-all** (arm→confirm, auto-disarm). Delete removes rows + demand. Port `13-privacy.html`.
-- **14 About** (`/about`) — source icon+badge matrix (live/scheduled/reference/demo), `ClearingSplash`,
-  "pre-launch — no fabricated traction" line. Port `14-about.html`.
-- **15 Feedback** (`/feedback`) — 1–5 §1c diverging scale (tone-underline, `FEEDBACK_TONES`; ink text on the light amber),
-  optional note → `feedback` (internal-only RLS), disabled-until-rated, "Thanks — noted" → `/`. Port `15-feedback.html`.
-- **Demand instrumentation** 🔒 — `POST /api/demand` (server-write `demand_signals`), a **k-anon N≥5 aggregate view**
-  (add a migration), raw rows never client-readable, home never identifying. Add a pgTAP test proving <5 is hidden.
+### Schema — `supabase/migrations/`
+- `…0001_j1_schema.sql` — J1 tables + RLS (`places` public-read; `trips plans saved_commutes profile_fields feedback demand_prefs` owner-only; `demand_signals` RLS-on / no policies = server-write-only).
+- `…0002_j2_schema.sql` — J2 tables + RLS (`corridors` public-read; `partner_domains` no policies; `eligibility` owner-read only; `commitments managed_setups` owner-all; `managed_plans managed_trips bookings` owner-read via parent; `bookings` insert only with `billing_on = false`).
+- `…0003_demand_kanon.sql` — `demand_aggregate()` `SECURITY DEFINER`, `search_path=''`, groups by generalised `od_pair`, **returns a group only at `count(*) >= 5`**; EXECUTE revoked from anon/public, granted `authenticated`.
+- `…0004_realtime.sql` — `managed_trips` added to the `supabase_realtime` publication (RLS still gates delivery).
+- `supabase/seed.sql` — 6 `places`, 1 demo corridor (`Hauz Khas ↔ DLF Cyber Hub`, threshold 250, **count 0**), 1 placeholder `partner_domains` row (`demo-employer.example`). No fake commitments.
 
-### Phase 8 — J2 entry: eligibility, waitlist, activation (🔒 on 17a)
-- **17a Eligibility** (`/eligibility`) 🔒 — form (name/employee-ID/company/work-email); **`POST /api/eligibility` decides
-  `partnered` SERVER-SIDE** vs `partner_domains` (client can NEVER forge it); ID captured-not-verified; partnered → `/setup`,
-  personal/unknown → `/corridor` (NOT an error). Port `17a-eligibility.html`. Add a test proving the client can't set partnered.
-- **17 Corridor & waitlist** (`/corridor`) — corridor read (committed_count/threshold, "Opening soon"), `POST /api/commit`
-  (creates a `commitment`, recomputes `committed_count` server-side), "intent not money" copy. Port `17-corridor.html`.
-- **18 Corridor is live** (`/corridor-live`) — `ClearingSplash` resolve; "Set up" → `/setup`, "Later" → `/`;
-  fires on real activation (partnered immediately / demand threshold), not a timer. Port `18-corridor-live.html`.
+### Key `lib/` (reuse — do not rebuild)
+`trip-state.ts` (localStorage trip across 03–09) · `use-places-search.ts` · `planner/{types,stub}.ts` · `arrive-by.ts` · `hm-time.ts` (H:MM ⇄ timestamptz, UTC) · `save-commute.ts` · `demand.ts` (`recordDemandSignal`, `generalisePlace`) · `managed-plan.ts` (locked J2 sample) · `managed-trip.ts` (schedule-derived steps + placeholder driver) · `tokens.ts` (`TOKENS, LINECOL, lineColour, FEEDBACK_TONES`) · `use-count-up.ts`, `use-reduced-motion.ts` · `supabase/{client,server,middleware}.ts` (`createClient` user-scoped, `createServiceRoleClient` server-only + throws in browser) · `env.ts` (`publicEnv`, `serverEnv()`).
 
-### Phase 9 — J2 plan: setup, itinerary, booking
-- **19 Managed setup** (`/setup`) — home/tower (prefill from `profile_fields`), arrival/return steppers ±15, Mon–Fri chips;
-  writes `managed_setups`; history-aware back; → `/itinerary`. Port `19-setup.html`.
-- **20 Itinerary card** (`/itinerary`) — **boarding-pass "stub"** (LEAVE `SplitFlap` hero, dashed perforation, `--paper2`, NOT a
-  card), all-contracted legs (`.tl.mgd` filled-ink-square marker, AC-shuttle trunk), why-this-plan stats, "committed window"
-  honesty, fallback-cab+credit note; → `/booking`. Port `20-itinerary.html`. (New marker `.tl.mgd` = filled ink SQUARE per design §11.)
-- **21 Booking & pass** (`/booking`) — trip-type + per-day/monthly, "what's covered", `bookings.billing_on=false`, "₹0 · pilot"
-  copy, **no payment SDK**; → `/managed`. Port `21-booking.html`. 🔒 (bookings — verify billing_on can't be true, RLS already enforces it).
+### Tests — `tests/` (32 files, 140 Vitest) + `supabase/tests/` (3 files, 27 pgTAP) + `tests/e2e/journeys.spec.ts` (Playwright, not yet runnable — §5).
 
-### Phase 10 — J2 live: trip + managed home
-- **23 Managed home** (`/managed`) — Myself/Clearline segment (Myself → `/`), assigned ride (`SplitFlap`, `.tl.mgd`,
-  "Pilot — no charge yet"), reschedule + modify (→ `/setup` prefilled), `TabBar`; → `/trip`. Port `23-managed-home.html`.
-- **22 Live trip** (`/trip`) — `TripMap`, `SplitFlap` ETA, driver/vehicle, step tracker (done/now/upcoming), Share (copy link),
-  **Emergency (oxblood)**; **Supabase Realtime on `managed_trips`**; feature-flag the source (Tookan trial ↔ DIY driver-GPS).
-  Port `22-livetrip.html`. Steps advance via Realtime; map repaint kick; leg-fail → fallback+credit state.
+---
 
-### Phase 11 — Hardening / a11y / PWA / launch
-- Sweep every screen's states (error/empty/loading/offline/edge) + the offline "last-known + freshness" banner.
-- Accessibility AA (axe clean, keyboard-only, reduced-motion settle everywhere), responsive 320/390/430/tablet.
-- PWA install + honest offline; Lighthouse perf on 4G; maps lazy.
-- **Gate/remove `/dev/*` routes before launch** (currently public — see PARKED). Full `security-review` sweep + record pass.
-- Playwright e2e per `journey.md`. Then: **only when the human approves**, wire remote Supabase keys, `git push`, Vercel deploy,
-  and a full on-device NO-GO walkthrough with the human.
+## 4. Verification status (exact — re-run before trusting)
 
-## 6. Parked / needs the human (see `PARKED.md`, don't block on these)
-- Remote Supabase keys (for Vercel deploy only — local build is self-sufficient).
-- Mappls key → the Planner runs on `stubPlanner` (P4.1). **Never wire real Mappls (P4.2) without the key.**
-- A real `multi_part`/`parts` column on `places` (screen 05→07 currently uses the `isMultiPart` heuristic; 07 uses a demo parts list).
-- `git push` / Vercel / on-device confirms — human-approved only.
+```bash
+pnpm typecheck        # tsc --noEmit — clean
+pnpm lint             # next lint — clean
+pnpm test             # 140 pass (32 files)
+supabase db reset && supabase test db   # 27 pgTAP pass (reset FIRST — gotcha ⚠️4)
+pnpm build            # clean — 24 routes, middleware 62.5 kB (do NOT run while pnpm dev is up — gotcha ⚠️1)
+```
+
+Live-verified in Chrome at end of run: login → 03 → 04 → 05 → 08 → 09 → save → 10 (J1); 17a → 17 (+commit, count 0→1) → 19 → 20 → 21 → 23 → 22 (J2); plus 11/13/14/15/16. Console clean throughout.
+
+**🔒 Full security-review self-sweep result: ZERO high-severity.** Every API route auth-gated with `user_id` from the session + RLS backstop; service-role only post-auth on no-client-write tables, scoped to the caller's own resources; `partnered` / `billing_on` server-derived and test-proven unforgeable; k-anon N≥5; home never in a signal; no payment path; no secrets in responses; `.env*` gitignored. Gate passes recorded for every high-stakes file this run.
+
+---
+
+## 5. What's LEFT — the human-gated finish (this is your job)
+
+All in `PARKED.md`. **None are code defects.** Do them in roughly this order, each only when Tarun says go:
+
+1. **Playwright e2e** — spec is written (`tests/e2e/journeys.spec.ts`, both journeys incl. `₹0 · pilot` assertions), `pnpm test:e2e` + `playwright.config.ts` wired, `tsconfig`/`eslint` already exclude the dir. Needs an **install** (ask first): `pnpm add -D @playwright/test && pnpm exec playwright install chromium`. Then: local Supabase up + `supabase db reset` + `pnpm test:e2e`.
+2. **API rate-limiting** — none of the mutating routes (`/api/commute|profile|feedback|privacy|demand|eligibility|commit|managed*`) are rate-limited. Self-DoS / abuse only (all owner-scoped), but add a per-user/IP limiter before any public launch.
+3. **Production auth** — configure a real SMS provider (or Supabase dashboard test numbers for the pilot) on the remote project; ensure **no `[auth.sms.test_otp]` numbers ship to prod**.
+4. **Remote Supabase** — project `https://sgwazmaiaydkgdizguxy.supabase.co`. Get the anon + service_role keys → Vercel env vars (NOT `.env.local` on this machine). `supabase link` then `supabase db push` to apply migrations 0001–0004 remotely.
+5. **Mappls key** (optional, still stub) — Tarun's signup; confirm free / no-card / routing-in-tier. Until then the Planner stays on `lib/planner/stub.ts` — **do not wire the real engine without the key** (P4.2). Same for a real `places.multi_part`/`parts` column (05→07 currently uses the `isMultiPart` name/type heuristic + a demo parts list).
+6. **`git push` + Vercel deploy** — Tarun-approved only. Then a full **on-device NO-GO walkthrough** with him (this is where a live axe/Lighthouse pass belongs too — static a11y is done: aria-labels on icon buttons, focus-visible ink ring, reduced-motion settles, `role="status"` on banners).
+
+**If Tarun instead asks for polish / a bug fix:** follow the §3-loop from the old handoff — read the prototype file + BUILD-SPEC entry, port, TDD, `pnpm typecheck && pnpm lint && pnpm test` green (+ `supabase test db` for DB changes), verify live in Chrome + screenshot to Tarun, commit small (`PX.Y: …` + the two trailer lines from `git log -1`), update `BUILD-LOG.md`. Record a 🔒 gate pass for any high-stakes file.
+
+---
+
+## 6. Parked / needs Tarun (see `PARKED.md` — don't block on these)
+- Remote Supabase keys + `supabase db push` + `git push` + Vercel deploy + on-device NO-GO. **Human-approved only.**
+- Playwright install; API rate-limiting; prod SMS/OTP config.
+- Mappls key (stub planner until then); real `places.multi_part`/`parts` column.
+- Doc reconciliations (non-blocking): TripMap filter numbers (ERD §2 text vs the prototype values that were built), `design.md §1` pre-retune grey table.
+
+---
 
 ## 7. Gotchas that will bite you
-- **Supabase must be running** before any DB/auth work or `/api/plan` returns 401 / pages redirect to `/login`.
-- **MapLibre blank in the automation tab** is expected — kick with the zoom control; it paints in a real browser.
-- **`useSearchParams` needs a `<Suspense>` wrapper** in Next 15 (see `app/plan/page.tsx`).
-- **The security-gate hook blocks commits** touching high-stakes paths until you record a pass (§3.7).
-- **Don't create `any`** — lint fails the build. Cast through `unknown` to the generated `Json` type for jsonb columns
-  (see `app/api/plan/route.ts`).
-- Update `BUILD-LOG.md` per task and `PARKED.md` when you defer something. Update the auto-memory
-  `~/.claude/projects/-Users-tarunpuri/memory/project_clearline_app_build.md` when a phase completes.
 
-**Definition of done:** all 24 screens live on the local build, both journeys pass, honesty labels everywhere, RLS + k-anon hold,
-no money wired, tests green — then hand back to the human for push/deploy approval.
+1. **⚠️ Never run `pnpm build` while `pnpm dev` is running.** The build overwrites `.next` and the dev server then 404s its own chunks → the page renders completely unstyled. Fix: `pkill -f "next dev"; rm -rf .next; pnpm dev`.
+2. **⚠️ CSS class-name collisions bit this run TWICE** (`.trip`, `.empty`) — both only caught on the live walkthrough, not by Vitest. `app/globals.css` is one big `@layer components` shared by all 24 screens. **Before adding a ported class, `grep app/globals.css` for the bare name**; if it exists, namespace yours (`.priv-trip`, `.onboard`, `.mgd-legs .r`, …). Logged for Tarun in the 2026-09-04 daily note.
+3. **⚠️ `supabase test db` needs a clean seed.** `j2_rls_test.sql` test 4 assumes the demo corridor's `committed_count` starts at 0 — any real commit (e.g. from a live walkthrough) leaves it at 1+ and the test fails. **Always `supabase db reset` before `supabase test db`.** (Pre-existing test-isolation weakness; not fixed — out of scope.)
+4. **Supabase must be running** before any DB/auth work or `/api/plan` returns 401 / pages redirect to `/login`.
+5. **MapLibre paints blank in Claude's automation tab** — it composites only in a real visible browser. Kick with the zoom control if needed. Expected, not a bug.
+6. **`useSearchParams` needs a `<Suspense>` wrapper** in Next 15 (see `app/plan/page.tsx`).
+7. **`/api/plan` inserts a `trips` row on every call** — home + `/plan` + the J2 flow each hit it, so a single walkthrough leaves ~5 identical trip rows. Honest (they are trips the user planned) but noisy; a `?cache` param or dedupe is a reasonable future cleanup (not done).
+8. **`/trip` step tracker** shows the last step as "now" when opened after ~09:00 (all committed-window times are past) — schedule-derived honesty with no live feed; self-corrects for a real morning trip.
+9. **Don't create `any`** — lint fails the build. Cast jsonb through `unknown` to the generated `Json` type (see `app/api/plan/route.ts`).
+10. Update `BUILD-LOG.md` per task, `PARKED.md` when you defer, and the auto-memory `~/.claude/projects/-Users-tarunpuri/memory/project_clearline_app_build.md` when state changes.
+
+---
+
+## 8. Key file map
+
+```
+app/
+  page.tsx …………………………… 10 Home            app/api/
+  {login,verify}/ ……………… 01/02 auth            plan/route.ts ………… POST (stub planner + demand)
+  {choose,from,to,map,part,               commute/route.ts …… GET/POST saved_commutes
+   ways,plan}/ ………………… 03–09 J1 plan          profile/route.ts …… GET/PUT profile_fields
+  {you}/ ………………………… 16 account              feedback/route.ts … POST feedback
+  {profile,support,privacy,               privacy/route.ts …… GET/PATCH/DELETE
+   about,feedback}/ …………… 11–15 More            demand/route.ts …… POST (service-role, k-anon)
+  {eligibility,corridor,                  eligibility/route.ts  POST (partnered server-side)
+   corridor-live}/ …………… 17a/17/18 J2 entry     corridor/route.ts … GET
+  {setup,itinerary,booking}/  19/20/21 J2 plan   commit/route.ts …… POST (recompute count)
+  {managed,trip}/ ……………… 23/22 J2 live          managed/route.ts …… GET/POST setup+plan
+  dev/{controls,signatures,               managed/booking/route.ts  POST (billing off)
+   tokens}/ ……………… galleries (404 in prod)     managed/trip/route.ts     GET (Realtime source)
+  globals.css …… ALL 24 screens' ported CSS, one @layer components block
+  layout.tsx …… metadata + manifest + ServiceWorkerRegister
+
+components/  app-shell (+OfflineBanner) · controls · icon (+mail,phone) · offline-banner ·
+             split-flap · duotone · clearing-splash · trip-map · otp-input · service-worker-register
+lib/         (see §3) · supabase/{client,server,middleware,types}
+supabase/    migrations/0001–0004 · seed.sql · tests/{j1_rls,j2_rls,demand_kanon}_test.sql · config.toml
+tests/       32 *.test.{ts,tsx} · e2e/journeys.spec.ts   playwright.config.ts
+BUILD-LOG.md  PARKED.md  .env.example  .env.local(gitignored)
+```
+
+**Definition of done for the overall project:** all 24 screens live (✅), both journeys pass (✅),
+honesty labels everywhere (✅), RLS + k-anon hold (✅ — 27 pgTAP), no money wired (✅),
+`billing_on` unforgeable (✅), Realtime wired (✅) — **then, only on Tarun's approval:** Playwright
+green, rate-limiting in, prod auth configured, remote keys + `db push`, `git push`, Vercel deploy,
+on-device NO-GO walkthrough. Everything up to `git push` is done and green locally.
