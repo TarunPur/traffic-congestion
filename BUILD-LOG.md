@@ -75,3 +75,11 @@ Bound by ERD.md + the frozen docs. `../design/journey1-timetable/16screensjourne
 - `components/clearing-splash.tsx` — 9 tangled strands straighten into one clear line (strand 0 survives), node travels X0→X1, wordmark (Space Grotesk via `--wordmark`) then tagline fade in. Ported from 01-login.html. Reduced-motion `settle()` renders the final state instantly + fires `onDone` (never blank). Scoped CSS in globals.
 - **TDD:** `tests/clearing-splash.test.tsx` (5) — 9 strands + node, reduced-motion settle (wordmark/tagline `in`, node at 314, strand-0 survives), onDone immediate, custom copy, non-settled when motion allowed.
 - **Verify:** 51/51 tests, tsc + lint clean; `/dev/signatures` resolves to the clear line + wordmark live (StrictMode replays once in dev), console clean; screenshot sent.
+
+### P1.6 — TripMap 🎯 ✅ (2026-09-04)
+- `components/trip-map.tsx` — MapLibre GL (dynamically imported, kept out of the main bundle) + OpenFreeMap `liberty` (no key, via `NEXT_PUBLIC_MAP_STYLE_URL`). Duotone `filter` + paper-multiply tint + origin-ring / dest-teardrop markers + dashed ink route, all ported verbatim. `fitBounds` on origin+dest. **Repaint kick** (resize+triggerRepaint on visibilitychange/focus/pageshow/mount) — the prototype's fix for the rAF freeze. `lib/map-markers.ts` = pure, testable marker factory.
+- **Note:** used the prototype's filter values, not ERD §2's (logged in PARKED.md).
+- **TDD:** `tests/trip-map.test.tsx` (3) — marker forms (ring/teardrop ink+paper), component renders map + tint (maplibre mocked; WebGL can't run in jsdom).
+- **Verify:** 54/54 tests, tsc + lint clean; map **paints in a real browser** as a monochrome duotone (New Delhi, OSM attribution), console clean — confirms the documented automation-tab freeze is only a paint-kick issue, resolved by the repaint kick; screenshot sent.
+
+**Phase 1 checkpoint:** design system complete — Icon, all core controls, and the four signature components (SplitFlap, Duotone, ClearingSplash, TripMap), each with reduced-motion + states, matching the prototype. Gallery routes: `/dev/tokens`, `/dev/controls`, `/dev/signatures`. ▶ Phase 2 (data model & RLS) next.

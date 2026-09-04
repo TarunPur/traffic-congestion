@@ -4,6 +4,7 @@ import { useState } from "react";
 import { SplitFlap } from "@/components/split-flap";
 import { Duotone } from "@/components/duotone";
 import { ClearingSplash } from "@/components/clearing-splash";
+import { TripMap } from "@/components/trip-map";
 import { Cta } from "@/components/controls";
 
 /** P1 signatures gallery (dev-only) — grows to hold all four signature components. */
@@ -45,6 +46,15 @@ export default function SignaturesDevPage() {
         options={{ contrast: 1.9, max: 0.86 }}
         className="-mx-m"
         style={{ height: 172 }}
+      />
+
+      <H>TripMap — duotone (sample OD)</H>
+      <TripMap
+        origin={{ lng: 77.2065, lat: 28.5494 }}
+        dest={{ lng: 77.0889, lat: 28.4949 }}
+        className="-mx-m"
+        style={{ height: 320 }}
+        ariaLabel="Hauz Khas Enclave to DLF Cyber Hub"
       />
     </main>
   );

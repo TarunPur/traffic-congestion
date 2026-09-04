@@ -562,3 +562,79 @@
     transition: none;
   }
 }
+
+/**
+ * TripMap (P1.6) — MapLibre + OpenFreeMap liberty, rendered as a monochrome duotone map.
+ * Filter + paper-multiply tint + marker forms ported verbatim from 06-setonmap / 22-livetrip.
+ * (Note: ERD §2 lists slightly different filter numbers; the frozen CSS below is authoritative.)
+ */
+.trip-map {
+  position: relative;
+  overflow: hidden;
+  background: var(--paper);
+}
+.trip-map .map {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  filter: grayscale(0.88) contrast(1.1) brightness(1.02) sepia(0.08);
+}
+.trip-map .maptint {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: var(--paper);
+  mix-blend-mode: multiply;
+  opacity: 0.13;
+  pointer-events: none;
+}
+.trip-map .maplibregl-ctrl-attrib {
+  font-family: var(--grot);
+  font-size: 9px !important;
+  background: color-mix(in srgb, var(--paper) 80%, transparent) !important;
+}
+.trip-map .maplibregl-ctrl-attrib a {
+  color: var(--grey) !important;
+}
+/* markers — monochrome, distinct by form (ring = origin, teardrop = dest) */
+.trip-map .mk {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.trip-map .mk .ring {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 4px solid var(--ink);
+  box-sizing: border-box;
+  box-shadow: 0 0 0 2px var(--paper), 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+.trip-map .mk-dest svg {
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.4));
+}
+.trip-map .mk-dest {
+  animation: mkDrop 0.42s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.trip-map .mk-origin .ring {
+  animation: ringPop 0.32s var(--ease);
+}
+@keyframes mkDrop {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+}
+@keyframes ringPop {
+  from {
+    opacity: 0;
+    transform: scale(0.35);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .trip-map .mk-dest,
+  .trip-map .mk-origin .ring {
+    animation: none;
+  }
+}

@@ -19,5 +19,13 @@ until Tarun approves.
   Tarun confirms on his own device. Build proceeds; confirmations reconciled when he reviews.
 - [ ] **git push / Vercel deploy** — deferred until Tarun approves (P0.5 CI + P11.6 launch).
 
+## Doc discrepancies to reconcile (non-blocking; I used the frozen prototype)
+- [ ] **TripMap filter numbers** — ERD §2 lists `grayscale(.82) contrast(.95) brightness(1.05) sepia(.10)`,
+  but the frozen prototype (06-setonmap.html / 22-livetrip.html) uses
+  `grayscale(.88) contrast(1.1) brightness(1.02) sepia(.08)` + paper-multiply tint. Per "port, don't
+  re-derive" I used the prototype values. Reconcile the ERD text when convenient.
+- [ ] **design.md §1 grey table** — still lists pre-retune greys `#726c5e/#9a9384`; the authoritative
+  retuned set `#5f5a4e/#877f6e` (ERD §2 + active CSS) is what's built. Docs cleanup only.
+
 ## Resolved
 - Supabase project created (2026-09-04).
