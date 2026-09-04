@@ -7,6 +7,7 @@ import { Cta, Segmented, FilterTabs } from "@/components/controls";
 import { Icon } from "@/components/icon";
 import { SplitFlap } from "@/components/split-flap";
 import { getTrip } from "@/lib/trip-state";
+import { saveCommute } from "@/lib/save-commute";
 import { hmToMin, type Plan, type Leg } from "@/lib/planner/types";
 
 /**
@@ -91,6 +92,7 @@ export default function WaysPage() {
   const [basis, setBasis] = useState<Basis>("now");
   const [filter, setFilter] = useState<Filter>("All");
   const [open, setOpen] = useState<string | null>(null);
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
 
   const deadline = trip.arriveBy ? hmToMin(trip.arriveBy) : 9 * 60 + 30;
 
@@ -130,16 +132,40 @@ export default function WaysPage() {
     .map((p) => ({ p, st: statusText(p, deadline) }))
     .sort((a, b) => (a.st.late ? 1 : 0) - (b.st.late ? 1 : 0) || a.p.totalMin - b.p.totalMin);
 
+  async function onSetCommute() {
+    if (!recommended) return;
+    setSaveState("saving");
+    const ok = await saveCommute({
+      origin: trip.origin ?? { name: "Hauz Khas Enclave" },
+      dest: trip.dest ?? { name: "DLF Cyber Hub, Building 10" },
+      arriveBy: trip.arriveBy ?? "09:30",
+      preferredMode: recommended.legs.find((l) => l.ride)?.mode ?? null,
+    });
+    if (!ok) {
+      setSaveState("error");
+      return;
+    }
+    setSaveState("saved");
+    setTimeout(() => router.push("/"), 800);
+  }
+
   return (
     <AppShell
       scrollClassName="!px-0"
       foot={
         <>
-          <div className="cap" style={{ fontFamily: "var(--grot)", fontSize: 9.5, color: "var(--grey2)", textAlign: "right", padding: "11px var(--m)" }}>
-            Times from Delhi transit data · updated 2 min ago
+          <div className="cap" style={{ fontFamily: "var(--grot)", fontSize: 9.5, color: saveState === "error" ? "var(--accent)" : "var(--grey2)", textAlign: "right", padding: "11px var(--m)" }}>
+            {saveState === "error"
+              ? "Couldn’t save that — check your connection and try again."
+              : "Times from Delhi transit data · updated 2 min ago"}
           </div>
-          <Cta disabled={!recommended} onClick={() => router.push("/plan?name=recommended")}>
-            Set as my commute
+          <Cta
+            disabled={!recommended}
+            loading={saveState === "saving"}
+            loadingLabel="Saving…"
+            onClick={onSetCommute}
+          >
+            {saveState === "saved" ? "Saved as your commute" : "Set as my commute"}
           </Cta>
         </>
       }

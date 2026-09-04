@@ -6,6 +6,7 @@ import { AppShell } from "@/components/app-shell";
 import { Cta } from "@/components/controls";
 import { Icon } from "@/components/icon";
 import { getTrip } from "@/lib/trip-state";
+import { saveCommute } from "@/lib/save-commute";
 import { lineColour } from "@/lib/tokens";
 import { useCountUp } from "@/lib/use-count-up";
 import { hmToMin, type Plan, type Leg, type PlanName } from "@/lib/planner/types";
@@ -156,12 +157,32 @@ function PlanDetail() {
   const originName = trip.origin?.name ?? "Hauz Khas Enclave";
   const destName = trip.dest?.name ?? "DLF Cyber Hub · Bldg 10";
 
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  async function onSavePlan() {
+    if (!plan) return;
+    setSaveState("saving");
+    const ok = await saveCommute({
+      origin: trip.origin ?? { name: originName },
+      dest: trip.dest ?? { name: destName },
+      arriveBy: trip.arriveBy ?? "09:30",
+      preferredMode: plan.legs.find((l) => l.ride)?.mode ?? null,
+    });
+    if (!ok) {
+      setSaveState("error");
+      return;
+    }
+    setSaveState("saved");
+    setTimeout(() => router.push("/"), 800);
+  }
+
   return (
     <AppShell
       foot={
         <>
-          <div className="cap" style={{ fontFamily: "var(--grot)", fontSize: 9.5, color: "var(--grey2)", textAlign: "right", padding: "11px var(--m)" }}>
-            Times from Delhi transit data · updated 2 min ago · not guaranteed
+          <div className="cap" style={{ fontFamily: "var(--grot)", fontSize: 9.5, color: saveState === "error" ? "var(--accent)" : "var(--grey2)", textAlign: "right", padding: "11px var(--m)" }}>
+            {saveState === "error"
+              ? "Couldn’t save that — check your connection and try again."
+              : "Times from Delhi transit data · updated 2 min ago · not guaranteed"}
           </div>
           <div className="upsell">
             <div className="u-l">
@@ -172,8 +193,13 @@ function PlanDetail() {
               <Icon name="arrow" size={15} />
             </button>
           </div>
-          <Cta disabled={!plan} onClick={() => router.push("/")}>
-            Save this plan
+          <Cta
+            disabled={!plan}
+            loading={saveState === "saving"}
+            loadingLabel="Saving…"
+            onClick={onSavePlan}
+          >
+            {saveState === "saved" ? "Saved as your commute" : "Save this plan"}
           </Cta>
         </>
       }
