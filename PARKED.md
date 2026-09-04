@@ -17,10 +17,12 @@ until Tarun approves.
 - [ ] **PRODUCTION auth** — for the remote/prod project: configure a REAL SMS provider (or dashboard
   test numbers for the pilot) and ensure **no test-OTP numbers** ship to prod. (P11.5)
   - [x] `/dev/*` gallery routes — DONE (P11.1): a 404 in production via `lib/supabase/middleware.ts`.
-- [ ] **Playwright e2e** — `playwright.config.ts` + `tests/e2e/journeys.spec.ts` are written and
-  ready (both journeys per `journey.md §3`), and `pnpm test:e2e` is wired. Needs a dependency add
-  before it can run: `pnpm add -D @playwright/test && pnpm exec playwright install chromium`
-  (an install — pending Tarun's approval). Run with local Supabase up + a clean `supabase db reset`.
+- [x] **Playwright e2e** — DONE 2026-09-04 (commit `b98d194`). Installed `@playwright/test` +
+  chromium; `tests/e2e/auth.setup.ts` logs in once and the journey tests reuse the session
+  (`storageState`) so the run makes one OTP send; spec reconciled to the built UI. `pnpm test:e2e`
+  → 5/5 green (needs local Supabase up + `supabase db reset` first). **Not yet in CI** (the
+  GitHub Actions `verify` job still runs typecheck/lint/unit/build only — adding e2e there needs
+  a Supabase service container; do it during deploy setup if wanted).
 - [ ] **API rate-limiting** — none of the mutating routes (`/api/commute|profile|feedback|privacy|
   demand|eligibility|commit|managed*`) are rate-limited. Self-DoS / abuse only (all owner-scoped),
   but add a per-user/IP limiter before the public launch.
