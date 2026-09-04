@@ -2339,6 +2339,319 @@
     color: var(--grey);
     line-height: 1.55;
   }
+
+  /* monochrome progress / threshold bar (design §11 .prog) — ink fill on a hairline track */
+  .prog {
+    height: 3px;
+    background: color-mix(in srgb, var(--ink) 12%, transparent);
+    position: relative;
+    overflow: hidden;
+  }
+  .prog > span {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    background: var(--ink);
+  }
+
+  /* ── 17a Eligibility (screen 17a) — ported from 17a-eligibility.html ── */
+  .fl {
+    margin-top: 20px;
+  }
+  .doors {
+    margin-top: 22px;
+    padding-top: 16px;
+    border-top: 1px solid var(--hair);
+  }
+  .door {
+    display: grid;
+    grid-template-columns: 22px 1fr;
+    column-gap: 13px;
+    align-items: start;
+    padding: 11px 0;
+  }
+  .door .ic {
+    color: var(--ink);
+    padding-top: 1px;
+  }
+  .door .t {
+    font-family: var(--serif);
+    font-size: 14.5px;
+    font-weight: 500;
+  }
+  .door .d {
+    font-family: var(--grot);
+    font-size: 11.5px;
+    color: var(--grey);
+    margin-top: 2px;
+    line-height: 1.5;
+  }
+  .hint {
+    font-family: var(--grot);
+    font-size: 11px;
+    color: var(--grey2);
+    margin-top: 9px;
+    line-height: 1.5;
+  }
+  .hint b {
+    color: var(--grey);
+    font-weight: 600;
+  }
+  .err-line {
+    font-family: var(--grot);
+    font-size: 11.5px;
+    color: var(--accent);
+    margin-top: 9px;
+  }
+
+  /* ── 17 Corridor & waitlist (screen 17) — ported from 17-corridor.html ── */
+  .mast {
+    position: relative;
+    height: 150px;
+    overflow: hidden;
+    background: var(--paper2);
+  }
+  .mast canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .mast::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(to top, var(--paper) 1%, transparent 34%);
+  }
+  .masthead {
+    margin-top: 16px;
+  }
+  .masthead .k {
+    font-family: var(--grot);
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.17em;
+    text-transform: uppercase;
+    color: var(--grey);
+  }
+  .masthead .rt {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-top: 4px;
+    line-height: 1.1;
+  }
+  .act {
+    margin-top: 26px;
+    padding-top: 18px;
+    border-top: 1px solid var(--hair);
+  }
+  .act .row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+  .act .n {
+    font-family: var(--serif);
+    font-size: 27px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .act .n .of {
+    font-family: var(--grot);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--grey);
+  }
+  .act .lab {
+    font-family: var(--grot);
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.17em;
+    text-transform: uppercase;
+    color: var(--grey);
+  }
+  .act .prog {
+    margin-top: 12px;
+  }
+  .act .note {
+    font-family: var(--grot);
+    font-size: 11px;
+    color: var(--grey2);
+    margin-top: 9px;
+  }
+  .gets {
+    margin-top: 8px;
+  }
+  .get {
+    display: grid;
+    grid-template-columns: 22px 1fr;
+    column-gap: 13px;
+    align-items: start;
+    padding: 14px 0;
+    border-top: 1px solid var(--hair);
+  }
+  .get:first-child {
+    border-top: 0;
+  }
+  .get .ic {
+    color: var(--ink);
+    padding-top: 1px;
+  }
+  .get .t {
+    font-family: var(--serif);
+    font-size: 15px;
+    font-weight: 500;
+  }
+  .get .d {
+    font-family: var(--grot);
+    font-size: 11.5px;
+    color: var(--grey);
+    margin-top: 3px;
+    line-height: 1.5;
+  }
+  .dep {
+    margin-top: 24px;
+    padding: 16px 0;
+    border-top: 1px solid var(--hair);
+    border-bottom: 1px solid var(--hair);
+  }
+  .dep .t {
+    font-family: var(--serif);
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .dep .d {
+    font-family: var(--grot);
+    font-size: 12px;
+    color: var(--grey);
+    line-height: 1.55;
+    margin-top: 6px;
+  }
+
+  /* ── 18 Corridor is live (screen 18) — ported from 18-corridor-live.html ── */
+  .wrap {
+    position: relative;
+    z-index: 1;
+    text-align: left;
+    padding: 0 var(--m);
+  }
+  .wrap .k {
+    font-family: var(--grot);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--grey);
+  }
+  h1.big {
+    font-family: var(--serif);
+    font-size: 40px;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1.05;
+    margin-top: 18px;
+  }
+  .wrap .sub {
+    font-family: var(--grot);
+    font-size: 13.5px;
+    color: var(--grey);
+    line-height: 1.6;
+    margin-top: 20px;
+    max-width: 34ch;
+  }
+  .wrap .sub b {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .clearing {
+    width: 100%;
+    height: 40px;
+    margin-top: 34px;
+    overflow: visible;
+  }
+  .clearing path,
+  .clearing line {
+    stroke: var(--ink);
+    fill: none;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+  }
+  .clearing .strand {
+    opacity: 0.4;
+    stroke-dasharray: 200;
+    stroke-dashoffset: 200;
+    animation: cl-draw 1s var(--ease) forwards;
+  }
+  .clearing .rail {
+    stroke-width: 2;
+    stroke-dasharray: 340;
+    stroke-dashoffset: 340;
+    animation: cl-draw 1.1s var(--ease) 0.5s forwards;
+  }
+  .clearing .node {
+    fill: var(--ink);
+    stroke: none;
+    opacity: 0;
+    animation: cl-pop 0.4s var(--ease) 1.5s forwards;
+  }
+  @keyframes cl-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  @keyframes cl-pop {
+    from {
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .clearing .strand,
+    .clearing .rail {
+      animation: none;
+      stroke-dashoffset: 0;
+    }
+    .clearing .node {
+      animation: none;
+      opacity: 1;
+    }
+    .clearing .strand {
+      opacity: 0.4;
+    }
+  }
+  .credit {
+    font-family: var(--grot);
+    font-size: 12px;
+    color: var(--grey);
+    margin-top: 30px;
+    padding-top: 16px;
+    border-top: 1px solid var(--hair);
+  }
+  .credit b {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .later {
+    all: unset;
+    cursor: pointer;
+    position: absolute;
+    z-index: 2;
+    top: 22px;
+    right: var(--m);
+    font-family: var(--grot);
+    font-size: 12px;
+    color: var(--grey);
+  }
+  .later:active {
+    color: var(--ink);
+  }
 }
 
 /**

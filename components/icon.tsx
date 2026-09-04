@@ -33,6 +33,7 @@ const PATHS = {
     '<rect x="6" y="3.5" width="12" height="12.5" rx="2"/><path d="M6 11h12"/><circle cx="9.4" cy="13.4" r=".9"/><circle cx="14.6" cy="13.4" r=".9"/><path d="M8.5 16l-2 3.5M15.5 16l2 3.5"/>',
   route: '<circle cx="6" cy="18" r="2.2"/><circle cx="18" cy="6" r="2.2"/><path d="M7.6 16.4l8.8-8.8"/>',
   gate: '<path d="M4 21V6l8-3 8 3v15"/><path d="M3 21h18"/><path d="M10 21v-5h4v5"/><path d="M8 9.5h.01M16 9.5h.01"/>',
+  mail: '<rect x="3" y="5" width="18" height="14" rx="1"/><path d="M4 7l8 6 8-6"/>',
 } as const;
 
 export type IconName = keyof typeof PATHS;
