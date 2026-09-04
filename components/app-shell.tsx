@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { OfflineBanner } from "@/components/offline-banner";
 
 /**
  * AppShell — the real mobile shell (P0.6). Replaces the prototype's 412×812 device frame.
@@ -28,6 +29,7 @@ export function AppShell({ children, foot, scrollClassName = "" }: AppShellProps
         data-testid="app-scroll"
         className={`relative z-[1] flex-1 overflow-y-auto px-m ${scrollClassName}`}
       >
+        <OfflineBanner />
         {children}
       </div>
       {foot ? (

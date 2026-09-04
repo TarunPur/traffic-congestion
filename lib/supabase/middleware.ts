@@ -5,20 +5,27 @@ import { publicEnv, hasSupabaseCredentials } from "@/lib/env";
 /**
  * Refreshes the Supabase auth session on every request and enforces route protection
  * (ERD §4). Unauthenticated users hitting a protected route are redirected to /login.
- * Public routes: /login, /verify, /api/*, /dev/*, and framework/static assets.
+ * Public routes: /login, /verify, /api/*, and framework/static assets. The /dev/* galleries
+ * are dev-only — a 404 in production (P11.1, previously public — see PARKED).
  */
 
 const PUBLIC_PATHS = ["/login", "/verify"];
+const DEV_ONLY = process.env.NODE_ENV !== "production";
 
 function isPublic(pathname: string): boolean {
   if (PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"))) return true;
   if (pathname.startsWith("/api/")) return true;
-  if (pathname.startsWith("/dev/")) return true; // dev galleries (not shipped)
+  if (pathname.startsWith("/dev/")) return DEV_ONLY; // dev galleries — never in production
   return false;
 }
 
 export async function updateSession(request: NextRequest): Promise<NextResponse> {
   let response = NextResponse.next({ request });
+
+  // /dev/* is a development affordance only — hide it entirely in production.
+  if (!DEV_ONLY && request.nextUrl.pathname.startsWith("/dev/")) {
+    return new NextResponse("Not found", { status: 404 });
+  }
 
   // Without credentials (never in normal dev now, but safe) don't attempt auth — just pass through.
   if (!hasSupabaseCredentials()) return response;
