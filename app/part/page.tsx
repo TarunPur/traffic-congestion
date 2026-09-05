@@ -1,12 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { Cta, RuledRows, SelectableRow } from "@/components/controls";
 import { Icon } from "@/components/icon";
 import { Duotone } from "@/components/duotone";
-import { getTrip, setTrip } from "@/lib/trip-state";
+import { setTrip, useTrip } from "@/lib/trip-state";
 
 /**
  * 07 · Which part (BUILD-SPEC §7·07). Shown only for a multi-part hub. Radio list of
@@ -27,7 +27,7 @@ const DEMO_PARTS: Part[] = [
 
 export default function WhichPartPage() {
   const router = useRouter();
-  const trip = useMemo(() => getTrip(), []);
+  const [trip] = useTrip();
   const destName = trip.dest?.name ?? "Your destination";
   const [sel, setSel] = useState(0);
 

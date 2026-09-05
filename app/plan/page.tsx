@@ -1,11 +1,11 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { Cta } from "@/components/controls";
 import { Icon } from "@/components/icon";
-import { getTrip } from "@/lib/trip-state";
+import { useTrip } from "@/lib/trip-state";
 import { saveCommute } from "@/lib/save-commute";
 import { lineColour } from "@/lib/tokens";
 import { useCountUp } from "@/lib/use-count-up";
@@ -126,7 +126,7 @@ function PlanDetail() {
   const router = useRouter();
   const params = useSearchParams();
   const name = (params.get("name") ?? "recommended") as PlanName;
-  const trip = useMemo(() => getTrip(), []);
+  const [trip] = useTrip();
   const [plans, setPlans] = useState<Plan[] | null>(null);
 
   useEffect(() => {
