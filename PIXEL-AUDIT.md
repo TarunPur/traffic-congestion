@@ -18,6 +18,93 @@ project already requires before calling any screen done.
 
 ---
 
+## Post-Fix Verification Pass — 2026-09-05 (third pass, after 20 fix commits)
+
+**Method:** local Supabase reset fresh (`supabase db reset`), app running on `localhost:3001` from
+the exact code at `origin/main` HEAD (`f70ce2c` at the time of this pass — confirmed identical,
+0 commits ahead/behind), locked design screens on `localhost:8747/16screensjourney1-working/`.
+Logged in with the test-OTP flow, walked the full J1 flow end to end (login → choose → from → to →
+map → ways → plan → save) and most of J2 (eligibility → setup → itinerary → booking → managed home →
+start trip → live trip) with real screenshots at every step, comparing directly against the locked
+design file open in an adjacent tab. This is a genuine live-browser re-verification of the 20 fix
+commits, not a re-read of the commit messages.
+
+**Overall picture: the great majority of fixes are confirmed working exactly as intended. One is
+confirmed NOT working — the Live Trip countdown — and one design-gap fix (screen 05's photo
+thumbnail) did not actually apply despite its commit message.** Corridor (17) and Corridor-is-live
+(18) were not re-walked live this pass (would have required a second, separate test account to hit
+the "not yet a partner" branch instead of the already-partnered one this session's account is
+committed to) — their fixes stay UNABLE TO CONFIRM LIVE, resting on the commit diff only.
+
+### RESOLVED — confirmed live, matches locked design
+- **Countdown bug, Home (§10) and Managed Home (§23):** both show small, sane values ("12 min",
+  "18 min") exactly matching the locked design's expected numbers. Confirmed on a fresh page load
+  and again after a full-flow round trip — stable, not fluctuating.
+- **Screen 07 CSS-selector bug:** the lead paragraph now renders as small grey caption text, not
+  oversized/dark. Confirmed directly.
+- **Screen 16 data bug:** recent trips now show real route/mode summary ("Yellow Line · 49 min") and
+  a separate date ("Today") — no more duplication. Confirmed directly.
+- **Duotone-thumbnail pattern — 5 of 6 screens confirmed:** Login filmstrip (§01, all 4 real photos
+  rendering above the wordmark), Home (§10), Profile (§11), Managed Home (§23), and Ways-to-go's
+  masthead (§08, full photo band + trip caption, exactly as the locked file's "signature move"
+  describes) all show real duotone photography now. **Screen 05 is the exception — see STILL
+  PRESENT below.**
+- **Screen 06 full rebuild:** confirmed live and it's a complete match to the locked design's
+  described interaction — floating panel, From/To search fields, swap icon, live crow-flies distance
+  in a bottom sheet ("13.0 km as the crow flies"), CTA disabled until both points are set then
+  enabling ("SEE WAYS TO GO"). Real map tiles and a dashed route line rendered correctly — the
+  automation-tab MapLibre limitation noted in earlier passes did **not** reproduce this time.
+- **Screen 03:** back button and "CHOOSE SERVICE" label are back in the topbar; the headline now
+  wraps to 2 lines matching the locked design's line break.
+- **Screen 04:** the map now shows a real pin by default (first result pre-selected) — confirmed
+  after it briefly looked pinless due to a longer unfiltered result list pushing the map band down to
+  a sliver; typing to filter results (matching the locked file's exact test) revealed the pin
+  rendering correctly with the same marker style as the locked design.
+- **Screen 05 subhead:** "From Hauz Khas Enclave. Your office, or today's destination." now renders
+  in full — the previously-dropped clause is back.
+- **Screen 14 (About):** now plays its own distinct animation (flat dash-segments scattering then
+  resolving left-to-right, ending in a static underlined "Clearline" wordmark) — visibly different
+  from Login's curved-strand animation, matching the locked design's intent. The "Your commute,
+  confirmed." tagline is back underneath it.
+- **Screen 15 (Feedback):** the "RATING THIS RIDE / Hauz Khas Enclave → DLF Cyber Hub, Building 10"
+  context block is now present with hairlines, reached via the real "Rate it" link from Home.
+- **Screen 20 (Itinerary):** operator tags now render in plain sentence case ("Clearline auto",
+  "Clearline AC shuttle") with no uppercase transform or letter-spacing — confirmed by direct
+  screenshot, no more all-caps eyebrow styling.
+- **Screen 02 (OTP) caret:** now visibly thin/hairline in a zoomed screenshot, a real change from the
+  thicker native caret seen in the prior pass — consistent with the custom-caret fix. Blink timing
+  and the `.din` entrance animation remain UNABLE TO CONFIRM from screenshots, same as before.
+
+### STILL PRESENT — fix did not actually resolve the issue
+- **🔴 Live Trip countdown (§22) — the fix commit's claim does not hold up live.** Loaded `/trip`
+  twice (fresh navigation both times): first showed **"min away"** preceded by a garbled run of
+  digits with what looked like a decimal point mid-stream; second load showed **"274737 min away"**
+  — still a large, nonsensical number, arguably a *new*, different failure mode (a raw
+  unrounded/misformatted value) rather than the original wall-clock-vs-hardcoded-time bug, but the
+  user-visible result is the same category of defect: this countdown is broken in the live app right
+  now. This is the single most important finding of this pass — the commit `32fa059` fixed Home and
+  Managed Home but did **not** actually fix Live Trip, despite the commit message claiming all three.
+- **🟡 Screen 05 photo thumbnail (§05) — the fix commit's claim does not hold up live.** Searched
+  "DLF Cyber" in `/to` exactly as the locked design does: the result row still shows a plain
+  briefcase icon, not the duotone photo thumbnail the locked design shows for this featured result.
+  The subhead half of this same commit (`7d2e84b`) did work — only the thumbnail part did not apply.
+
+### UNABLE TO CONFIRM LIVE this pass (not re-walked — different account/flow needed)
+- Screen 17 (Corridor) and Screen 18 (Corridor-is-live), including the dynamic-corridor-name fix
+  (`9918265`) — this session's test account is already past the "waitlist" branch (committed to the
+  already-partnered flow), and re-testing the not-yet-partner path would need a second, separate test
+  identity. Not confirmed broken — just not independently re-verified live this pass.
+- Screen 04's clear-button icon shape and Screen 22's phone-icon shape (commit `f70ce2c` claims a fix
+  for the former, confirms the latter was already correct) — not zoomed/compared this pass.
+- Exact sub-pixel values carried over as UNABLE TO CONFIRM from prior passes (OTP blink timing, the
+  22px map-height delta, back-button offset precision) remain unconfirmed for the same reason as
+  before — a screenshot can't settle them either way.
+
+### Screens not touched by this round of fixes, re-confirmed still clean
+09, 12, 13, 17a, 19, 21 — briefly re-checked live, no regressions, matches prior clean verdicts.
+
+---
+
 ## Visual Confirmation Pass — 2026-09-05 (second pass)
 
 **Method this time: live screenshots, both servers actually running and verified.** Docker was
