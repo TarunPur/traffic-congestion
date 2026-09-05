@@ -104,6 +104,14 @@
     text-transform: uppercase;
     color: var(--grey2);
   }
+  .topbar .running {
+    font-family: var(--grot);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--grey);
+  }
   .h1 {
     font-family: var(--serif);
     font-size: 27px;

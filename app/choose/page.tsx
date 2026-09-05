@@ -27,9 +27,17 @@ export default function ChoosePage() {
       }
     >
       <div className="topbar">
+        <button className="iconbtn" type="button" aria-label="Back" onClick={() => router.push("/")}>
+          <Icon name="back" size={22} />
+        </button>
+        <span className="running">Choose service</span>
         <span className="step">Step 2 of 4</span>
       </div>
-      <h1 className="h1">How should we help today?</h1>
+      <h1 className="h1">
+        How should we
+        <br />
+        help today?
+      </h1>
       <div className="said">Start with free planning. Upgrade when your route is covered.</div>
 
       <div className="modes" role="radiogroup" aria-label="Service">

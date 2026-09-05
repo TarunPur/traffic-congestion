@@ -38,4 +38,11 @@ describe("03 Choose service", () => {
     render(<ChoosePage />);
     expect(screen.getByText(/Available only on covered corridors/i)).toBeInTheDocument();
   });
+
+  it("has a back button and the 'Choose service' running label (PIXEL-AUDIT.md §03)", async () => {
+    render(<ChoosePage />);
+    expect(screen.getByText("Choose service")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Back" }));
+    expect(push).toHaveBeenCalledWith("/");
+  });
 });
