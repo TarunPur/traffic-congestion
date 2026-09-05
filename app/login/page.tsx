@@ -5,8 +5,11 @@ import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { ClearingSplash } from "@/components/clearing-splash";
 import { Cta } from "@/components/controls";
+import { FilmStrip } from "@/components/film-strip";
 import { formatNationalMobile, isValidMobile } from "@/lib/phone";
 import { sendOtp } from "@/app/login/actions";
+
+const MODE_PHOTOS = ["/img/mode-metro.jpg", "/img/mode-bus.jpg", "/img/mode-auto.jpg", "/img/mode-walk.jpg"];
 
 const ERROR_COPY: Record<string, string> = {
   invalid: "Enter a 10-digit mobile number.",
@@ -52,7 +55,10 @@ export default function LoginPage() {
         </>
       }
     >
-      <div style={{ paddingTop: 40 }}>
+      <div className="strip">
+        <FilmStrip images={MODE_PHOTOS} alt="Metro, bus, auto and walk" />
+      </div>
+      <div style={{ marginTop: 26 }}>
         <ClearingSplash />
       </div>
 
