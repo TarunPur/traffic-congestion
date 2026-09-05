@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { Cta } from "@/components/controls";
@@ -12,6 +13,20 @@ import { Cta } from "@/components/controls";
  */
 export default function CorridorLivePage() {
   const router = useRouter();
+  const [name, setName] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const res = await fetch("/api/corridor");
+      if (cancelled || !res.ok) return;
+      const data = (await res.json()) as { name: string };
+      setName(data.name);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <AppShell
@@ -31,7 +46,7 @@ export default function CorridorLivePage() {
           is live.
         </h1>
         <p className="sub">
-          Sikanderpur → DLF Cyber City is now a <b>managed commute</b>. We&rsquo;ve contracted the
+          {name ?? "This corridor"} is now a <b>managed commute</b>. We&rsquo;ve contracted the
           first and last mile and timed the waves — set yours up and we&rsquo;ll build your daily
           plan.
         </p>
