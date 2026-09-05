@@ -29,16 +29,19 @@ describe("04 Where from", () => {
     setTrip.mockClear();
   });
 
-  it("lists results and disables the CTA until one is chosen", () => {
+  it("pre-selects the first result by default — never a blank/pinless first paint (PIXEL-AUDIT.md §04)", async () => {
     render(<WhereFromPage />);
-    expect(screen.getByRole("option", { name: /Hauz Khas Enclave/ })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Set as start" })).toBeDisabled();
+    expect(await screen.findByRole("option", { name: /Hauz Khas Enclave/, selected: true })).toBeInTheDocument();
+    expect(setTrip).toHaveBeenCalledWith({ origin: { name: "Hauz Khas Enclave", lat: 28.55, lng: 77.2 } });
+    expect(screen.getByRole("button", { name: "Set as start" })).toBeEnabled();
   });
 
-  it("choosing a result writes the origin and enables → /to", async () => {
+  it("choosing a different result writes the new origin and stays enabled → /to", async () => {
     render(<WhereFromPage />);
-    await userEvent.click(screen.getByRole("option", { name: /Hauz Khas Enclave/ }));
-    expect(setTrip).toHaveBeenCalledWith({ origin: { name: "Hauz Khas Enclave", lat: 28.55, lng: 77.2 } });
+    await screen.findByRole("option", { name: /Hauz Khas Enclave/, selected: true });
+    setTrip.mockClear();
+    await userEvent.click(screen.getByRole("option", { name: /Hauz Khas Metro/ }));
+    expect(setTrip).toHaveBeenCalledWith({ origin: { name: "Hauz Khas Metro", lat: 28.54, lng: 77.21 } });
     const cta = screen.getByRole("button", { name: "Set as start" });
     expect(cta).toBeEnabled();
     await userEvent.click(cta);

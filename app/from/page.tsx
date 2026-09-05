@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { Cta } from "@/components/controls";
@@ -31,6 +31,13 @@ export default function WhereFromPage() {
   const [selected, setSelected] = useState<PlaceResult | null>(null);
   const [loc, setLoc] = useState<LocState>("idle");
   const { results } = usePlacesSearch(q);
+
+  // Locked design pre-selects the first result by default (sel=0) so the map always shows a pin
+  // and the CTA is ready to go — never a blank/pinless first paint (PIXEL-AUDIT.md §04).
+  useEffect(() => {
+    if (!selected && results.length > 0) choose(results[0]!);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [results]);
 
   function choose(r: PlaceResult) {
     setSelected(r);
