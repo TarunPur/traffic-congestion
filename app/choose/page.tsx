@@ -26,54 +26,60 @@ export default function ChoosePage() {
         <Cta onClick={onContinue}>{choice === "managed" ? "Join the waitlist" : "Continue"}</Cta>
       }
     >
-      <div className="topbar">
-        <button className="iconbtn" type="button" aria-label="Back" onClick={() => router.push("/")}>
-          <Icon name="back" size={22} />
-        </button>
-        <span className="running">Choose service</span>
-        <span className="step">Step 2 of 4</span>
-      </div>
-      <h1 className="h1">
-        How should we
-        <br />
-        help today?
-      </h1>
-      <div className="said">Start with free planning. Upgrade when your route is covered.</div>
+      <div className="flex min-h-full flex-col">
+        <div className="topbar">
+          <button className="iconbtn" type="button" aria-label="Back" onClick={() => router.push("/")}>
+            <Icon name="back" size={22} />
+          </button>
+          <span className="running">Choose service</span>
+          <span className="step">Step 2 of 4</span>
+        </div>
+        {/* Short, static content — centered in the remaining space so it doesn't strand a dead
+            gap above the footer CTA on screens where it doesn't naturally fill the viewport. */}
+        <div className="flex flex-1 flex-col" style={{ justifyContent: "safe center" }}>
+          <h1 className="h1">
+            How should we
+            <br />
+            help today?
+          </h1>
+          <div className="said">Start with free planning. Upgrade when your route is covered.</div>
 
-      <div className="modes" role="radiogroup" aria-label="Service">
-        <button
-          className="mode"
-          type="button"
-          role="radio"
-          aria-checked={choice === "free"}
-          onClick={() => setChoice("free")}
-        >
-          <div className="top">
-            <span className="ttl">I&rsquo;ll plan it myself</span>
-            <span className="tag">Free</span>
-          </div>
-          <div className="desc">Plan with live and scheduled public-transport data. You travel on your own.</div>
-          <span className="radio" aria-hidden />
-        </button>
+          <div className="modes" role="radiogroup" aria-label="Service">
+            <button
+              className="mode"
+              type="button"
+              role="radio"
+              aria-checked={choice === "free"}
+              onClick={() => setChoice("free")}
+            >
+              <div className="top">
+                <span className="ttl">I&rsquo;ll plan it myself</span>
+                <span className="tag">Free</span>
+              </div>
+              <div className="desc">Plan with live and scheduled public-transport data. You travel on your own.</div>
+              <span className="radio" aria-hidden />
+            </button>
 
-        <button
-          className="mode"
-          type="button"
-          role="radio"
-          aria-checked={choice === "managed"}
-          onClick={() => setChoice("managed")}
-        >
-          <div className="top">
-            <span className="ttl">Clearline manages it</span>
-            <span className="tag">Managed</span>
+            <button
+              className="mode"
+              type="button"
+              role="radio"
+              aria-checked={choice === "managed"}
+              onClick={() => setChoice("managed")}
+            >
+              <div className="top">
+                <span className="ttl">Clearline manages it</span>
+                <span className="tag">Managed</span>
+              </div>
+              <div className="desc">A reserved commute, door-to-door — when your corridor opens.</div>
+              <span className="note">
+                <Icon name="pin" size={13} />
+                <span>Available only on covered corridors</span>
+              </span>
+              <span className="radio" aria-hidden />
+            </button>
           </div>
-          <div className="desc">A reserved commute, door-to-door — when your corridor opens.</div>
-          <span className="note">
-            <Icon name="pin" size={13} />
-            <span>Available only on covered corridors</span>
-          </span>
-          <span className="radio" aria-hidden />
-        </button>
+        </div>
       </div>
     </AppShell>
   );

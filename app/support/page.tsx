@@ -77,62 +77,74 @@ export default function SupportPage() {
 
   return (
     <AppShell scrollClassName="pb-[30px]">
-      <div className="topbar">
-        <button className="iconbtn" type="button" aria-label="Back to home" onClick={() => router.push("/")}>
-          <Icon name="back" size={22} />
-        </button>
-      </div>
+      <div className="flex min-h-full flex-col">
+        <div className="topbar">
+          <button className="iconbtn" type="button" aria-label="Back to home" onClick={() => router.push("/")}>
+            <Icon name="back" size={22} />
+          </button>
+        </div>
 
-      <h1 className="h1">Support</h1>
-      <p className="said">We run no buses or trains — but tell us what&rsquo;s off and we&rsquo;ll fix the app.</p>
+        {/* Short, static content on a screen with no footer CTA — centered in the remaining
+            space so it doesn't leave a dead gap below "Get in touch" on most viewports. Content
+            that grows past the viewport (FAQ items opened) still scrolls normally. */}
+        <div className="flex flex-1 flex-col" style={{ justifyContent: "safe center" }}>
+          <h1 className="h1">Support</h1>
+          <p className="said">We run no buses or trains — but tell us what&rsquo;s off and we&rsquo;ll fix the app.</p>
 
-      <div className="sh">
-        <h2>Common questions</h2>
-      </div>
-      <div className="rule" />
-      <div className="faq">
-        {FAQ.map((item, i) => {
-          const isOpen = open === i;
-          return (
-            <div key={i} className={`item${isOpen ? " open" : ""}`}>
-              <button className="q" type="button" aria-expanded={isOpen} onClick={() => setOpen(isOpen ? null : i)}>
-                <span className="qt">{item.q}</span>
-                <span className="cv">
-                  <Icon name="chev" size={18} />
+          <div className="sh">
+            <h2>Common questions</h2>
+          </div>
+          <div className="rule" />
+          <div className="faq">
+            {FAQ.map((item, i) => {
+              const isOpen = open === i;
+              return (
+                <div key={i} className={`item${isOpen ? " open" : ""}`}>
+                  <button
+                    className="q"
+                    type="button"
+                    aria-expanded={isOpen}
+                    onClick={() => setOpen(isOpen ? null : i)}
+                  >
+                    <span className="qt">{item.q}</span>
+                    <span className="cv">
+                      <Icon name="chev" size={18} />
+                    </span>
+                  </button>
+                  <div className="a">
+                    <div className="in">{item.a}</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="sh">
+            <h2>Get in touch</h2>
+          </div>
+          <div className="rule" />
+          <div className="grp">
+            {ACTIONS.map((a) => (
+              <button
+                key={a.nm}
+                className="actrow"
+                type="button"
+                onClick={() => (a.to ? router.push(a.to) : setAck(a.nm))}
+              >
+                <span className="ic">
+                  <Icon name={a.icon} size={18} />
+                </span>
+                <span>
+                  <span className="nm">{ack === a.nm ? "Opening…" : a.nm}</span>
+                  <div className="sub">{a.sub}</div>
+                </span>
+                <span className="ch">
+                  <Icon name="chevR" size={18} />
                 </span>
               </button>
-              <div className="a">
-                <div className="in">{item.a}</div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="sh">
-        <h2>Get in touch</h2>
-      </div>
-      <div className="rule" />
-      <div className="grp">
-        {ACTIONS.map((a) => (
-          <button
-            key={a.nm}
-            className="actrow"
-            type="button"
-            onClick={() => (a.to ? router.push(a.to) : setAck(a.nm))}
-          >
-            <span className="ic">
-              <Icon name={a.icon} size={18} />
-            </span>
-            <span>
-              <span className="nm">{ack === a.nm ? "Opening…" : a.nm}</span>
-              <div className="sub">{a.sub}</div>
-            </span>
-            <span className="ch">
-              <Icon name="chevR" size={18} />
-            </span>
-          </button>
-        ))}
+            ))}
+          </div>
+        </div>
       </div>
     </AppShell>
   );
