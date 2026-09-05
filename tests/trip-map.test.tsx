@@ -1,13 +1,25 @@
-import { describe, it, expect, vi } from "vitest";
-import { render } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { useEffect, useState } from "react";
+import { act, render } from "@testing-library/react";
 import { createMarkerElement } from "@/lib/map-markers";
+import type { LngLat } from "@/components/trip-map";
 
 /** P1.6 — TripMap. The pure marker factory is unit-tested; the map itself (WebGL) is verified
  * live in a real browser (NO-GO). maplibre-gl is mocked here so the component renders in jsdom. */
 
+const { addToSpy } = vi.hoisted(() => ({ addToSpy: vi.fn() }));
+
 vi.mock("maplibre-gl", () => {
   class FakeMap {
-    on() {}
+    private loadCb: (() => void) | null = null;
+    on(event: string, cb: () => void) {
+      if (event === "load") {
+        this.loadCb = cb;
+        // A real map's style/tile load resolves on a later tick, never synchronously —
+        // this is what makes the origin/dest-arrives-before-load race reproducible.
+        setTimeout(() => this.loadCb?.(), 20);
+      }
+    }
     addControl() {}
     addSource() {}
     addLayer() {}
@@ -15,6 +27,7 @@ vi.mock("maplibre-gl", () => {
       return { setData() {} };
     }
     fitBounds() {}
+    easeTo() {}
     resize() {}
     triggerRepaint() {}
     remove() {}
@@ -24,9 +37,14 @@ vi.mock("maplibre-gl", () => {
       return this;
     }
     addTo() {
+      addToSpy();
       return this;
     }
+    on() {}
     remove() {}
+    getLngLat() {
+      return { lng: 0, lat: 0 };
+    }
   }
   return {
     default: {
@@ -64,5 +82,30 @@ describe("TripMap", () => {
     expect(container.querySelector(".trip-map")).not.toBeNull();
     expect(container.querySelector(".trip-map .map")).not.toBeNull();
     expect(container.querySelector(".trip-map .maptint")).not.toBeNull();
+  });
+
+  describe("marker sync when origin/dest arrive before the map finishes loading", () => {
+    beforeEach(() => addToSpy.mockClear());
+
+    it("still adds both markers once the map loads (a screen that prefills origin/dest fast, e.g. 06 Set on map)", async () => {
+      const { TripMap } = await import("@/components/trip-map");
+      function Wrapper() {
+        const [pts, setPts] = useState<{ origin: LngLat | null; dest: LngLat | null }>({
+          origin: null,
+          dest: null,
+        });
+        // Mirrors a real prefill effect: origin/dest settle almost immediately after mount,
+        // well before the map's simulated 20ms "load" delay above.
+        useEffect(() => {
+          setPts({ origin: { lng: 77.2, lat: 28.5 }, dest: { lng: 77.09, lat: 28.49 } });
+        }, []);
+        return <TripMap origin={pts.origin} dest={pts.dest} draggable />;
+      }
+      render(<Wrapper />);
+      await act(async () => {
+        await new Promise((r) => setTimeout(r, 60));
+      });
+      expect(addToSpy).toHaveBeenCalledTimes(2);
+    });
   });
 });

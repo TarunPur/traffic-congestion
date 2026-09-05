@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Map as MlMap, Marker as MlMarker } from "maplibre-gl";
 import { publicEnv } from "@/lib/env";
 import { createMarkerElement } from "@/lib/map-markers";
@@ -36,12 +36,17 @@ export interface TripMapProps {
   onDestMove?: (p: LngLat) => void;
   /** Auto fit/center the view to the markers. Off for draggable editing (avoids jumps). */
   autoFit?: boolean;
+  /** fitBounds padding (px), per-side. Default is a flat 64px; a screen with its own floating
+   * chrome over the map (e.g. a search panel top, a sheet bottom) should pass more room on
+   * those sides so a marker never lands underneath them. */
+  fitPadding?: { top?: number; bottom?: number; left?: number; right?: number };
   className?: string;
   style?: React.CSSProperties;
   ariaLabel?: string;
 }
 
 const DELHI: [number, number] = [77.209, 28.6139];
+const DEFAULT_PADDING = { top: 64, bottom: 64, left: 64, right: 64 };
 
 export function TripMap({
   origin,
@@ -54,6 +59,7 @@ export function TripMap({
   onOriginMove,
   onDestMove,
   autoFit = true,
+  fitPadding,
   className = "",
   style,
   ariaLabel = "Trip map",
@@ -67,6 +73,12 @@ export function TripMap({
   const onDestMoveRef = useRef(onDestMove);
   onOriginMoveRef.current = onOriginMove;
   onDestMoveRef.current = onDestMove;
+  // Flips once the map finishes loading. Without this, a screen whose origin/dest settle
+  // right after mount (e.g. prefilled from saved trip state) can have them arrive — and the
+  // reactive sync effect below run and no-op on `!map` — entirely before the map itself is
+  // ready, with nothing left to re-trigger the sync once it is. Including this in that effect's
+  // deps gives it one more, guaranteed-ready chance to run.
+  const [mapLoaded, setMapLoaded] = useState(false);
 
   // Init the map once.
   useEffect(() => {
@@ -121,7 +133,7 @@ export function TripMap({
           paint: { "line-color": "#1b1a16", "line-width": 3, "line-dasharray": [2, 1.6], "line-opacity": 1 },
         });
         routeReady.current = true;
-        syncData();
+        setMapLoaded(true);
       });
 
       // store cleanup on the map instance
@@ -144,11 +156,6 @@ export function TripMap({
     // Map is created once; data changes flow through the sync effect below.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // Sync markers + route whenever the props change.
-  const syncData = () => {
-    void syncMarkersAndRoute();
-  };
 
   async function syncMarkersAndRoute() {
     const map = mapRef.current;
@@ -191,10 +198,11 @@ export function TripMap({
     }
 
     if (!autoFit) return;
+    const padding = { ...DEFAULT_PADDING, ...fitPadding };
     if (origin && dest) {
       map.fitBounds(
         new maplibregl.LngLatBounds([origin.lng, origin.lat], [dest.lng, dest.lat]),
-        { padding: 64, duration: 600, maxZoom: 14 },
+        { padding, duration: 600, maxZoom: 14 },
       );
     } else if (origin) {
       map.easeTo({ center: [origin.lng, origin.lat], zoom: 14.2, duration: 600, offset: [0, -8] });
@@ -206,7 +214,7 @@ export function TripMap({
   useEffect(() => {
     void syncMarkersAndRoute();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [origin?.lng, origin?.lat, dest?.lng, dest?.lat, route]);
+  }, [mapLoaded, origin?.lng, origin?.lat, dest?.lng, dest?.lat, route]);
 
   return (
     <div className={`trip-map ${className}`.trim()} style={style} role="img" aria-label={ariaLabel}>
