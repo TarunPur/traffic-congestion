@@ -4,9 +4,16 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { Cta, Segmented, TabBar } from "@/components/controls";
+import { Duotone } from "@/components/duotone";
 import { Icon } from "@/components/icon";
 import { SplitFlap } from "@/components/split-flap";
 import { hmToMin, type Plan, type Leg, type PlaceRef } from "@/lib/planner/types";
+
+// Same duotone crop/treatment as the locked design's homethumb (10-savedhome.html) — also
+// reused verbatim on Profile's saved-commute row and Managed Home (design's own "signature
+// reuse" note).
+const DEST_THUMB_CROP = { sxf: 0.18, syf: 0.1, swf: 0.5, shf: 0.52 };
+const DEST_THUMB_OPTIONS = { contrast: 1.9, max: 0.9 };
 
 /**
  * 10 · Saved / home (BUILD-SPEC §7·10). The retention surface — morning-open rate is the product
@@ -204,6 +211,17 @@ export default function Home() {
           ) : null}
 
           <div className="head">
+            <span className="thumb">
+              <Duotone
+                src="/img/dlf-cyberhub.jpg"
+                alt={commute?.dest.name ?? "Destination"}
+                canvasWidth={110}
+                canvasHeight={110}
+                crop={DEST_THUMB_CROP}
+                options={DEST_THUMB_OPTIONS}
+                vignette={false}
+              />
+            </span>
             <span>
               <div className="k">{commute?.label ?? "Morning · to work"}</div>
               <div className="route">

@@ -271,6 +271,17 @@
   .rowline:last-child {
     border-bottom: 1px solid var(--hair);
   }
+  .rowline.hasthumb {
+    grid-template-columns: 52px 1fr auto;
+  }
+  .rowline .thumb {
+    width: 52px;
+    height: 52px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--paper2);
+    position: relative;
+  }
   .rowline .ic {
     color: var(--grey2);
     display: inline-flex;
@@ -1354,6 +1365,14 @@
   .ride .head .route .t {
     color: var(--grey);
     font-weight: 400;
+  }
+  .ride .head .thumb {
+    flex: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--paper2);
   }
   .instrument {
     margin-top: 26px;
@@ -2973,16 +2992,6 @@
   }
 
   /* ── 23 Managed home (screen 23) — ported from 23-managed-home.html ── */
-  .thumb-i {
-    flex: none;
-    width: 44px;
-    height: 44px;
-    border-radius: 4px;
-    background: var(--paper2);
-    display: grid;
-    place-items: center;
-    color: var(--grey);
-  }
   .rowh {
     font-family: var(--grot);
     font-size: 9.5px;
@@ -3379,6 +3388,21 @@
 .flaps.sm .flap .fold span {
   height: 47px;
   line-height: 47px;
+}
+
+/* 01 Login's mode filmstrip (4 duotone thumbnails) — bleeds edge-to-edge against the shell's
+   default var(--m) side padding. Ported from 01-login.html's .strip. */
+.strip {
+  position: relative;
+  flex: none;
+  height: 188px;
+  margin: 0 calc(-1 * var(--m)) 0;
+  overflow: hidden;
+}
+.strip canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 /**

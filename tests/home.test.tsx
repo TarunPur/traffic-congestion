@@ -8,6 +8,7 @@ vi.mock("next/navigation", () => ({ useRouter: () => ({ push }) }));
 vi.mock("@/components/split-flap", () => ({
   SplitFlap: ({ value }: { value: string }) => <div data-testid="split-flap">{value}</div>,
 }));
+vi.mock("@/components/duotone", () => ({ Duotone: () => <div data-testid="duotone" /> }));
 
 import Home from "@/app/page";
 

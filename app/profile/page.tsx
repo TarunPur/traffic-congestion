@@ -3,8 +3,13 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
+import { Duotone } from "@/components/duotone";
 import { Icon, type IconName } from "@/components/icon";
 import type { PlaceRef } from "@/lib/planner/types";
+
+// Same duotone crop/treatment as Home's ride-head thumbnail (design's own "signature reuse").
+const DEST_THUMB_CROP = { sxf: 0.18, syf: 0.1, swf: 0.5, shf: 0.52 };
+const DEST_THUMB_OPTIONS = { contrast: 1.9, max: 0.9 };
 
 /**
  * 11 · Profile (BUILD-SPEC §10·11) — the progressive profile. Every field is optional ("Not set"
@@ -102,7 +107,15 @@ export default function ProfilePage() {
         {commutes.map((c) => (
           <button key={c.id} className="crow" type="button" onClick={() => router.push("/ways")}>
             <span className="thumb">
-              <Icon name="route" size={20} />
+              <Duotone
+                src="/img/dlf-cyberhub.jpg"
+                alt={c.dest.name}
+                canvasWidth={110}
+                canvasHeight={110}
+                crop={DEST_THUMB_CROP}
+                options={DEST_THUMB_OPTIONS}
+                vignette={false}
+              />
             </span>
             <span>
               <span className="k">{c.label}</span>

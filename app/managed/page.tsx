@@ -4,9 +4,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { Cta, Segmented, TabBar } from "@/components/controls";
-import { Icon } from "@/components/icon";
+import { Duotone } from "@/components/duotone";
 import { SplitFlap } from "@/components/split-flap";
 import type { ManagedPlan } from "@/lib/managed-plan";
+
+// Same duotone crop/treatment as Home's ride-head thumbnail (design's own "signature reuse").
+const DEST_THUMB_CROP = { sxf: 0.18, syf: 0.1, swf: 0.5, shf: 0.52 };
+const DEST_THUMB_OPTIONS = { contrast: 1.9, max: 0.9 };
 
 /** Documented sample starting value for the "until pickup" countdown — matches the locked
  * design's own 23-managed-home.html script (`let mins=18`), which ticks down independent of
@@ -145,8 +149,16 @@ export default function ManagedHomePage() {
 
       <section className="ride">
         <div className="head">
-          <span className="thumb-i">
-            <Icon name="route" size={20} />
+          <span className="thumb">
+            <Duotone
+              src="/img/dlf-cyberhub.jpg"
+              alt={setup?.tower ?? "DLF Cyber City"}
+              canvasWidth={110}
+              canvasHeight={110}
+              crop={DEST_THUMB_CROP}
+              options={DEST_THUMB_OPTIONS}
+              vignette={false}
+            />
           </span>
           <span>
             <div className="k">Managed · to work</div>
