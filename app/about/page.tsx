@@ -4,13 +4,14 @@ import type { ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { Icon, type IconName } from "@/components/icon";
-import { ClearingSplash } from "@/components/clearing-splash";
+import { AboutClearing } from "@/components/about-clearing";
 
 /**
  * 14 · About (BUILD-SPEC §10·14). The source icon + status-badge matrix is the public statement
  * of data honesty (design §10) — buses live, metro scheduled, platform/gate curated demo. The
- * "pre-launch — no fabricated traction" line stays verbatim. `ClearingSplash` is the brand moment
- * (About is a sanctioned brand surface, design §9). Reduced motion settles it, never blank.
+ * "pre-launch — no fabricated traction" line stays verbatim. The brand block has its own distinct
+ * animation (AboutClearing) — not ClearingSplash, which is reserved for Login/Verify — a static
+ * underlined wordmark, and its own tagline (design §9). Reduced motion settles it, never blank.
  */
 
 function Badge({ cls, children }: { cls: "live" | "sched"; children: ReactNode }) {
@@ -42,7 +43,12 @@ export default function AboutPage() {
       </div>
 
       <div className="brand">
-        <ClearingSplash word="Clearline" tagline="Your commute, confirmed." />
+        <AboutClearing />
+        <span className="wordmark">
+          Clearline
+          <span className="wordmark-line" />
+        </span>
+        <div className="tag">Your commute, confirmed.</div>
         <p className="lede">
           One honest timetable for your Delhi commute — <b>Metro, bus, auto and walk</b>, and when to
           leave.

@@ -4,14 +4,24 @@ import userEvent from "@testing-library/user-event";
 
 const push = vi.fn();
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push }) }));
-vi.mock("@/components/clearing-splash", () => ({
-  ClearingSplash: () => <div data-testid="clearing-splash" />,
+vi.mock("@/components/about-clearing", () => ({
+  AboutClearing: () => <div data-testid="about-clearing" />,
 }));
 
 import AboutPage from "@/app/about/page";
 
 describe("14 About", () => {
   beforeEach(() => push.mockClear());
+
+  it("uses its own distinct brand animation, tagline, and a static underlined wordmark — not ClearingSplash (PIXEL-AUDIT.md §14)", () => {
+    render(<AboutPage />);
+    expect(screen.getByTestId("about-clearing")).toBeInTheDocument();
+    expect(screen.queryByTestId("clearing-splash")).not.toBeInTheDocument();
+    expect(screen.getByText("Your commute, confirmed.")).toBeInTheDocument();
+    const wordmark = screen.getByText("Clearline");
+    expect(wordmark).toHaveClass("wordmark");
+    expect(wordmark.querySelector(".wordmark-line")).not.toBeNull();
+  });
 
   it("shows the data-source matrix with status badges", () => {
     render(<AboutPage />);
