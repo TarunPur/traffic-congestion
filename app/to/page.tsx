@@ -4,11 +4,21 @@ import { Fragment, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { Cta } from "@/components/controls";
+import { Duotone } from "@/components/duotone";
 import { Icon } from "@/components/icon";
 import { TripMap } from "@/components/trip-map";
 import { usePlacesSearch, iconForPlace, isMultiPart, type PlaceResult } from "@/lib/use-places-search";
-import { setTrip } from "@/lib/trip-state";
+import { setTrip, useTrip } from "@/lib/trip-state";
 import { ARRIVE_DEFAULT, stepArrive, toHM, to12h } from "@/lib/arrive-by";
+
+// Same duotone crop/treatment as the destination thumbnails elsewhere (design's own "signature
+// reuse") — only for the one place we actually have a real licensed photo of (DLF Cyber Hub);
+// every other result keeps its plain type icon rather than a fabricated photo.
+const DEST_THUMB_CROP = { sxf: 0.18, syf: 0.1, swf: 0.5, shf: 0.52 };
+const DEST_THUMB_OPTIONS = { contrast: 1.9, max: 0.9 };
+function hasRealPhoto(name: string): boolean {
+  return name === "DLF Cyber Hub";
+}
 
 function highlight(name: string, q: string) {
   const query = q.trim();
@@ -26,6 +36,7 @@ function highlight(name: string, q: string) {
 
 export default function WhereToPage() {
   const router = useRouter();
+  const [trip] = useTrip();
   const [q, setQ] = useState("");
   const [selected, setSelected] = useState<PlaceResult | null>(null);
   const [arrive, setArrive] = useState(ARRIVE_DEFAULT);
@@ -81,7 +92,9 @@ export default function WhereToPage() {
           <span className="step">Step 4 of 4</span>
         </div>
         <h1 className="h1">Where are you headed?</h1>
-        <div className="said">Your office, or today&rsquo;s destination.</div>
+        <div className="said">
+          {trip.origin?.name ? `From ${trip.origin.name}. ` : ""}Your office, or today&rsquo;s destination.
+        </div>
 
         <span className="field" style={{ marginTop: 20 }}>
           <Icon name="search" size={18} />
@@ -104,14 +117,28 @@ export default function WhereToPage() {
             <button
               key={r.id}
               type="button"
-              className="rowline"
+              className={`rowline${hasRealPhoto(r.name) ? " hasthumb" : ""}`}
               role="option"
               aria-selected={selected?.name === r.name}
               onClick={() => choose(r)}
             >
-              <span className="ic">
-                <Icon name={iconForPlace(r)} size={19} />
-              </span>
+              {hasRealPhoto(r.name) ? (
+                <span className="thumb">
+                  <Duotone
+                    src="/img/dlf-cyberhub.jpg"
+                    alt={r.name}
+                    canvasWidth={120}
+                    canvasHeight={120}
+                    crop={DEST_THUMB_CROP}
+                    options={DEST_THUMB_OPTIONS}
+                    vignette={false}
+                  />
+                </span>
+              ) : (
+                <span className="ic">
+                  <Icon name={iconForPlace(r)} size={19} />
+                </span>
+              )}
               <span className="lines">
                 <span className="nm">{highlight(r.name, q)}</span>
                 {r.subLabel ? <span className="sub">{r.subLabel}</span> : null}
@@ -124,7 +151,7 @@ export default function WhereToPage() {
         </div>
       </div>
 
-      <div style={{ position: "relative", height: 200, borderTop: "1px solid var(--hair)", marginTop: 18 }}>
+      <div style={{ position: "relative", height: 178, borderTop: "1px solid var(--hair)", marginTop: 18 }}>
         <TripMap
           dest={selected ? { lng: selected.lng, lat: selected.lat } : null}
           interactive={false}
