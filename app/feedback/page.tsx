@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { Cta } from "@/components/controls";
 import { Icon } from "@/components/icon";
@@ -22,8 +22,11 @@ const SCALE = [
   { v: 5, w: "Smooth" },
 ] as const;
 
-export default function FeedbackPage() {
+function FeedbackForm() {
   const router = useRouter();
+  const params = useSearchParams();
+  const origin = params.get("origin");
+  const dest = params.get("dest");
   const [rating, setRating] = useState<number>(0);
   const [note, setNote] = useState("");
   const [sent, setSent] = useState(false);
@@ -65,6 +68,15 @@ export default function FeedbackPage() {
         commute?
       </h1>
       <p className="said">A quick, honest read on how the trip felt — it tells us what to fix first.</p>
+
+      {origin && dest ? (
+        <div className="ctx">
+          <div className="k">Rating this ride</div>
+          <div className="nm">
+            {origin} <span className="t">→ {dest}</span>
+          </div>
+        </div>
+      ) : null}
 
       <div className="qh">How did the ride feel?</div>
       <div className="scale" role="group" aria-label="Ride rating from 1, rough, to 5, smooth">
@@ -109,5 +121,13 @@ export default function FeedbackPage() {
         </span>
       </div>
     </AppShell>
+  );
+}
+
+export default function FeedbackPage() {
+  return (
+    <Suspense fallback={null}>
+      <FeedbackForm />
+    </Suspense>
   );
 }

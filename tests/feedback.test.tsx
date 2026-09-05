@@ -4,7 +4,11 @@ import userEvent from "@testing-library/user-event";
 
 const push = vi.fn();
 const back = vi.fn();
-vi.mock("next/navigation", () => ({ useRouter: () => ({ push, back }) }));
+let searchParams = new URLSearchParams();
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push, back }),
+  useSearchParams: () => searchParams,
+}));
 
 import FeedbackPage from "@/app/feedback/page";
 
@@ -12,8 +16,22 @@ describe("15 Feedback", () => {
   beforeEach(() => {
     push.mockClear();
     back.mockClear();
+    searchParams = new URLSearchParams();
   });
   afterEach(() => vi.unstubAllGlobals());
+
+  it("names the specific trip being rated when the link carries it (PIXEL-AUDIT.md §15)", () => {
+    searchParams = new URLSearchParams({ origin: "Hauz Khas Enclave", dest: "DLF Cyber Hub" });
+    render(<FeedbackPage />);
+    expect(screen.getByText("Rating this ride")).toBeInTheDocument();
+    expect(screen.getByText("Hauz Khas Enclave")).toBeInTheDocument();
+    expect(screen.getByText(/DLF Cyber Hub/)).toBeInTheDocument();
+  });
+
+  it("omits the context block when no trip is specified", () => {
+    render(<FeedbackPage />);
+    expect(screen.queryByText("Rating this ride")).not.toBeInTheDocument();
+  });
 
   it("disables Send until a rating is chosen, then shows 'N · word'", async () => {
     render(<FeedbackPage />);

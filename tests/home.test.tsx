@@ -126,12 +126,12 @@ describe("10 Saved / home", () => {
     expect(push).toHaveBeenCalledWith("/ways");
   });
 
-  it("routes the feedback nudge to /feedback", async () => {
+  it("routes the feedback nudge to /feedback, naming the specific trip being rated", async () => {
     vi.stubGlobal("fetch", mockFetch(SAVED));
     render(<Home />);
     const fb = await screen.findByRole("button", { name: /yesterday’s commute|yesterday's commute/ });
     await userEvent.click(fb);
-    expect(push).toHaveBeenCalledWith("/feedback");
+    expect(push).toHaveBeenCalledWith("/feedback?origin=Hauz%20Khas%20Enclave&dest=DLF%20Cyber%20Hub");
   });
 
   it("with no saved commute shows the onboarding nudge and routes to /choose", async () => {

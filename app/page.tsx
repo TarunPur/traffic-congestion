@@ -329,7 +329,17 @@ export default function Home() {
             </button>
           </div>
 
-          <button className="fbline" type="button" onClick={() => router.push("/feedback")}>
+          <button
+            className="fbline"
+            type="button"
+            onClick={() =>
+              router.push(
+                commute
+                  ? `/feedback?origin=${encodeURIComponent(commute.origin.name)}&dest=${encodeURIComponent(commute.dest.name)}`
+                  : "/feedback",
+              )
+            }
+          >
             <span className="t">How was yesterday&rsquo;s commute?</span>
             <span className="go">
               Rate it <Icon name="chevR" size={14} />
