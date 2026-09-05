@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { Cta, Segmented, FilterTabs } from "@/components/controls";
+import { Duotone } from "@/components/duotone";
 import { Icon } from "@/components/icon";
 import { SplitFlap } from "@/components/split-flap";
-import { getTrip } from "@/lib/trip-state";
+import { useTrip } from "@/lib/trip-state";
 import { saveCommute } from "@/lib/save-commute";
 import { hmToMin, type Plan, type Leg } from "@/lib/planner/types";
 
@@ -85,7 +86,7 @@ function matchesFilter(p: Plan, f: Filter): boolean {
 
 export default function WaysPage() {
   const router = useRouter();
-  const trip = useMemo(() => getTrip(), []);
+  const [trip] = useTrip();
   const [plans, setPlans] = useState<Plan[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
@@ -149,6 +150,10 @@ export default function WaysPage() {
     setTimeout(() => router.push("/"), 800);
   }
 
+  const originName = trip.origin?.name ?? "Hauz Khas Enclave";
+  const destFull = trip.dest?.name ?? "DLF Cyber Hub, Building 10";
+  const [destName, destTail] = destFull.includes(" · ") ? (destFull.split(" · ") as [string, string]) : [destFull, null];
+
   return (
     <AppShell
       scrollClassName="!px-0"
@@ -171,6 +176,21 @@ export default function WaysPage() {
       }
     >
       <div style={{ padding: "0 var(--m)" }}>
+        <div className="ways-masthead">
+          <Duotone src="/img/dlf-cyberhub.jpg" alt={destName} canvasWidth={784} canvasHeight={300} credit="Slyronit · CC BY-SA 4.0" vignette={false} />
+          <div className="fade" />
+          <div className="fade-side" />
+          <button className="trip" type="button" onClick={() => router.push("/to")} aria-label={`Edit trip: ${originName} to ${destName}`}>
+            {originName}
+            <span className="sep"> → </span>
+            {destName}
+            {destTail ? <span className="tail"> · {destTail}</span> : null}
+            <span className="edit" style={{ marginLeft: 6, display: "inline-flex", verticalAlign: "middle" }}>
+              <Icon name="edit" size={13} />
+            </span>
+          </button>
+        </div>
+
         <div className="topbar">
           <button className="iconbtn" type="button" aria-label="Back" onClick={() => router.push("/to")}>
             <Icon name="back" size={22} />
