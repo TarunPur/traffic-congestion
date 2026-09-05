@@ -1402,6 +1402,38 @@
     gap: 9px;
     margin-top: 30px;
   }
+  .cellwrap {
+    position: relative;
+  }
+  /* the locked design's custom caret, overlaid on the active empty cell (its own native
+     text-caret is hidden via caret-color while this shows) */
+  .cellwrap .caret {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 2px;
+    height: 30px;
+    background: var(--ink);
+    transform: translate(-50%, -50%);
+    animation: otpCaretBlink 1.05s steps(1) infinite;
+    pointer-events: none;
+  }
+  @keyframes otpCaretBlink {
+    50% {
+      opacity: 0;
+    }
+  }
+  /* per-digit entrance — plays once because the cell remounts (a fresh key) only when a digit is
+     newly typed in, never on backspace */
+  .otp .cell[data-filled] {
+    animation: digIn 0.3s var(--ease);
+  }
+  @keyframes digIn {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+  }
   .otp .cell {
     all: unset;
     box-sizing: border-box;
@@ -1454,6 +1486,12 @@
       transition: none;
     }
     .otp[data-error="true"] {
+      animation: none;
+    }
+    .cellwrap .caret {
+      animation: none;
+    }
+    .otp .cell[data-filled] {
       animation: none;
     }
   }

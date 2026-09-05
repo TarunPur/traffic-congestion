@@ -61,4 +61,19 @@ describe("OtpInput", () => {
     render(<OtpInput value="12" onChange={() => {}} error />);
     expect(screen.getByRole("group")).toHaveAttribute("data-error", "true");
   });
+
+  it("shows a custom caret on the active empty cell, hides the native one, and marks filled cells for the entrance animation (PIXEL-AUDIT.md §02)", async () => {
+    render(<Harness />);
+    const cells = screen.getAllByRole("textbox") as HTMLInputElement[];
+    await userEvent.click(cells[0]!);
+    // active + empty: custom caret shown, native caret hidden
+    expect(cells[0]!.parentElement!.querySelector(".caret")).not.toBeNull();
+    expect(cells[0]!.style.caretColor).toBe("transparent");
+    expect(cells[0]).not.toHaveAttribute("data-filled");
+
+    await userEvent.keyboard("1");
+    // now filled: custom caret gone (native caret irrelevant — not focused anymore either), marked for entrance
+    expect(cells[0]!.parentElement!.querySelector(".caret")).toBeNull();
+    expect(cells[0]).toHaveAttribute("data-filled");
+  });
 });

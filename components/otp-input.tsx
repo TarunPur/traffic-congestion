@@ -1,10 +1,19 @@
 "use client";
 
-import { useRef, type ChangeEvent, type ClipboardEvent, type KeyboardEvent } from "react";
+import { useRef, useState, type ChangeEvent, type ClipboardEvent, type KeyboardEvent } from "react";
 
 /**
  * OtpInput (screen 02) — 6 single-digit cells. Auto-advance per digit, paste fills all six,
  * backspace moves to the previous cell, numeric keypad. Cells stay filled for correction.
+ *
+ * Real <input> elements (more accessible than the locked mock's plain divs), so the locked
+ * design's custom caret and per-digit entrance animation are ported as CSS rather than literal
+ * innerHTML swaps: a custom caret span replaces the browser's native one on the active empty
+ * cell (hidden via caret-color), and the entrance animation is driven by a data-filled attribute
+ * — the [data-filled] rule only starts matching once a cell goes from empty to holding a digit,
+ * which is enough on its own to play a CSS animation once; no remount needed (a remount here
+ * would have to happen mid-paste while focus is being set on another cell, right before it, and
+ * risked stealing it back).
  */
 
 export interface OtpInputProps {
@@ -25,6 +34,7 @@ export function OtpInput({
   length = 6,
 }: OtpInputProps) {
   const refs = useRef<Array<HTMLInputElement | null>>([]);
+  const [active, setActive] = useState<number | null>(null);
 
   const setValue = (next: string) => {
     const clean = next.replace(/\D/g, "").slice(0, length);
@@ -77,27 +87,39 @@ export function OtpInput({
 
   return (
     <div className="otp" role="group" aria-label={`${length}-digit code`} data-error={error || undefined}>
-      {Array.from({ length }).map((_, i) => (
-        <input
-          key={i}
-          ref={(el) => {
-            refs.current[i] = el;
-          }}
-          className="cell"
-          type="text"
-          inputMode="numeric"
-          autoComplete={i === 0 ? "one-time-code" : "off"}
-          maxLength={1}
-          disabled={disabled}
-          aria-label={`Digit ${i + 1}`}
-          aria-invalid={error || undefined}
-          value={value[i] ?? ""}
-          onChange={handleChange(i)}
-          onKeyDown={handleKeyDown(i)}
-          onPaste={handlePaste}
-          onFocus={(e) => e.target.select()}
-        />
-      ))}
+      {Array.from({ length }).map((_, i) => {
+        const filled = Boolean(value[i]);
+        const showCaret = active === i && !filled;
+        return (
+          <span key={i} className="cellwrap">
+            <input
+              ref={(el) => {
+                refs.current[i] = el;
+              }}
+              className="cell"
+              data-filled={filled || undefined}
+              type="text"
+              inputMode="numeric"
+              autoComplete={i === 0 ? "one-time-code" : "off"}
+              maxLength={1}
+              disabled={disabled}
+              aria-label={`Digit ${i + 1}`}
+              aria-invalid={error || undefined}
+              value={value[i] ?? ""}
+              style={showCaret ? { caretColor: "transparent" } : undefined}
+              onChange={handleChange(i)}
+              onKeyDown={handleKeyDown(i)}
+              onPaste={handlePaste}
+              onFocus={(e) => {
+                e.target.select();
+                setActive(i);
+              }}
+              onBlur={() => setActive((a) => (a === i ? null : a))}
+            />
+            {showCaret ? <span className="caret" aria-hidden="true" /> : null}
+          </span>
+        );
+      })}
     </div>
   );
 }
