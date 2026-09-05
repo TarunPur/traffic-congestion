@@ -345,6 +345,190 @@
     background: color-mix(in srgb, var(--ink) 6%, transparent);
   }
 
+  /* ── 06 Set on map — ported from 06-setonmap.html ── */
+  .mapscreen {
+    position: absolute;
+    inset: 0;
+  }
+  .panel {
+    position: absolute;
+    z-index: 5;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 18px var(--m) 0;
+  }
+  .prow {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .prow .iconbtn {
+    background: var(--paper);
+    box-shadow: 0 2px 12px -4px rgba(0, 0, 0, 0.4), inset 0 0 0 1px var(--hair);
+    margin: 5px 0 0;
+  }
+  .fields {
+    flex: 1;
+    position: relative;
+    background: var(--paper);
+    border-radius: 6px;
+    box-shadow: 0 6px 22px -8px rgba(0, 0, 0, 0.45), inset 0 0 0 1px var(--hair);
+  }
+  .fieldrow {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    height: 50px;
+    padding: 0 13px;
+    position: relative;
+  }
+  .fieldrow + .fieldrow {
+    box-shadow: inset 0 1px 0 var(--hair);
+  }
+  .fieldrow .end {
+    flex: none;
+    width: 16px;
+    display: flex;
+    justify-content: center;
+    color: var(--ink);
+  }
+  .fieldrow input {
+    all: unset;
+    flex: 1;
+    font-family: var(--grot);
+    font-size: 14.5px;
+    color: var(--ink);
+    caret-color: var(--ink);
+    min-width: 0;
+  }
+  .fieldrow input::placeholder {
+    color: var(--grey2);
+  }
+  .fieldrow .swap,
+  .fieldrow .clr {
+    all: unset;
+    cursor: pointer;
+    color: var(--grey2);
+    display: inline-flex;
+    padding: 4px;
+  }
+  .fields .spine {
+    position: absolute;
+    left: 20.5px;
+    top: 26px;
+    bottom: 26px;
+    width: 1.5px;
+    background: repeating-linear-gradient(var(--ink) 0 2px, transparent 2px 5px);
+    opacity: 0.5;
+  }
+  .endA {
+    width: 13px;
+    height: 13px;
+    border: 1.6px solid var(--ink);
+    border-radius: 50%;
+    box-sizing: border-box;
+  }
+  .endB svg {
+    display: block;
+  }
+  .suggest {
+    margin-top: 8px;
+    background: var(--paper);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 10px 26px -10px rgba(0, 0, 0, 0.5), inset 0 0 0 1px var(--hair);
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  .sug {
+    all: unset;
+    cursor: pointer;
+    display: grid;
+    grid-template-columns: 26px 1fr auto;
+    gap: 11px;
+    align-items: center;
+    padding: 12px 14px;
+    border-top: 1px solid var(--hair);
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .sug:first-child {
+    border-top: 0;
+  }
+  .sug:hover {
+    background: color-mix(in srgb, var(--ink) 5%, transparent);
+  }
+  .sug .ic {
+    color: var(--grey2);
+    display: inline-flex;
+    justify-content: center;
+  }
+  .sug .nm {
+    font-family: var(--serif);
+    font-size: 14.5px;
+    font-weight: 500;
+  }
+  .sug .nm mark {
+    background: none;
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .sug .ty {
+    font-family: var(--grot);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--grey2);
+  }
+  .disclaimer {
+    position: absolute;
+    z-index: 4;
+    left: 0;
+    right: 0;
+    bottom: 150px;
+    text-align: center;
+    pointer-events: none;
+  }
+  .disclaimer span {
+    font-family: var(--grot);
+    font-size: 10px;
+    color: var(--grey);
+    background: color-mix(in srgb, var(--paper) 82%, transparent);
+    padding: 5px 11px;
+    border-radius: 20px;
+    box-shadow: inset 0 0 0 1px var(--hair);
+  }
+  .sheet {
+    background: var(--paper);
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -8px 30px -14px rgba(0, 0, 0, 0.4);
+    padding: 14px var(--m) 0;
+  }
+  .sheet .sumrow {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 34px;
+  }
+  .sheet .sum {
+    font-family: var(--grot);
+    font-size: 12.5px;
+    color: var(--grey);
+    line-height: 1.4;
+  }
+  .sheet .sum b {
+    font-family: var(--serif);
+    font-size: 15px;
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .sheet .cta {
+    margin: 12px calc(-1 * var(--m)) 0;
+  }
+
   /* primary CTA (full-bleed ink bar, pinned in the foot) */
   .cta {
     all: unset;

@@ -35,6 +35,7 @@ const PATHS = {
   gate: '<path d="M4 21V6l8-3 8 3v15"/><path d="M3 21h18"/><path d="M10 21v-5h4v5"/><path d="M8 9.5h.01M16 9.5h.01"/>',
   mail: '<rect x="3" y="5" width="18" height="14" rx="1"/><path d="M4 7l8 6 8-6"/>',
   phone: '<path d="M5 4h3l2 5-2 1a12 12 0 0 0 5 5l1-2 5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z"/>',
+  swap: '<path d="M7 4v16M7 4L4 7M7 4l3 3M17 20V4M17 20l-3-3M17 20l3-3"/>',
 } as const;
 
 export type IconName = keyof typeof PATHS;
