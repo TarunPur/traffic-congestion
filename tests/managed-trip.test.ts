@@ -51,4 +51,45 @@ describe("lib/managed-trip", () => {
     const steps = deriveSteps(500, anchor); // way past the last step
     expect(etaMinutes(500, steps)).toBe(0);
   });
+
+  /**
+   * Regression for PIXEL-AUDIT.md's "Post-Fix Verification Pass" — the Live Trip screen showed a
+   * garbled, nonsensical number ("274737 min away") in production. Root cause: elapsedMin is a raw
+   * float (real ms elapsed / 60_000), so whenever a step's own ETA is still positive (the first
+   * ~3 minutes after trip creation, before Pickup's own due instant), etaMinutes returned a long
+   * decimal like 1.7623833333333333. SplitFlap only renders digit glyphs 0-9 and a literal ":" — it
+   * has no handling for "." — so that 18-character string rendered as a long garbled digit row,
+   * easily misread as one huge number. etaMinutes must always return a whole number.
+   */
+  it("always returns a whole number, even when the elapsed time itself is fractional", () => {
+    const anchor = new Date("2026-09-05T07:00:00");
+    // A real-world elapsedMin is essentially never an exact integer (it's derived from Date.now()).
+    const fractionalElapsed = 1.7623833333333333;
+    const steps = deriveSteps(fractionalElapsed, anchor);
+    const eta = etaMinutes(fractionalElapsed, steps);
+    expect(Number.isInteger(eta)).toBe(true);
+    expect(String(eta)).not.toContain(".");
+  });
+
+  /**
+   * Once a step's own nominal instant has passed but the next step hasn't started yet, the
+   * countdown should keep ticking toward the NEXT step rather than sitting stuck at 0 for the
+   * entire remainder of that step's window (previously: any elapsedMin past a step's own offset
+   * clamped straight to 0, e.g. showing "0 min away" for the ~9 minutes between Pickup's due time
+   * and the AC shuttle step starting).
+   */
+  it("counts down to the next step once the active step's own instant has passed", () => {
+    const anchor = new Date("2026-09-05T07:00:00");
+    // Pickup (offset 3) is still "now" but its own instant passed 2 min ago; AC shuttle is next at 12.
+    const steps = deriveSteps(5, anchor);
+    expect(steps[0]!.state).toBe("now");
+    expect(etaMinutes(5, steps)).toBe(7); // 12 - 5
+  });
+
+  it("shows 0 once the very last step is active and its own instant has passed", () => {
+    const anchor = new Date("2026-09-05T07:00:00");
+    const steps = deriveSteps(65, anchor); // past the last step (offset 62), no next step to count to
+    expect(steps[3]!.state).toBe("now");
+    expect(etaMinutes(65, steps)).toBe(0);
+  });
 });

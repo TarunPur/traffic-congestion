@@ -69,9 +69,24 @@ export function deriveSteps(elapsedMin: number, anchor: Date): TripStep[] {
   }));
 }
 
+/**
+ * Minutes until the next thing happens, always a whole number.
+ *
+ * `elapsedMin` is a real-world float (ms elapsed / 60_000) — it's essentially never an exact
+ * integer, so the result must be rounded before display: SplitFlap only renders digit glyphs and
+ * a literal ":", with no handling for a decimal point, so a raw float like 1.7623833333333333
+ * rendered as a long garbled digit row (PIXEL-AUDIT.md's "274737 min away").
+ *
+ * While the active step's own instant hasn't arrived yet, count down to it. Once it's passed
+ * (true for almost all of an active step's display window — a step only stops being "now" once
+ * the NEXT one starts), count down to the next step instead of sitting stuck at 0.
+ */
 export function etaMinutes(elapsedMin: number, steps: TripStep[]): number {
-  const active = steps.find((s) => s.state === "now") ?? steps[0]!;
-  return Math.max(0, active.min - elapsedMin);
+  const activeIdx = steps.findIndex((s) => s.state === "now");
+  const active = steps[activeIdx] ?? steps[0]!;
+  if (elapsedMin < active.min) return Math.round(active.min - elapsedMin);
+  const next = steps[activeIdx + 1];
+  return next ? Math.max(0, Math.round(next.min - elapsedMin)) : 0;
 }
 
 export const DEMO_DRIVER = { name: "Ramesh K.", vehicle: "Silver WagonR · DL 1C AB 2345" };
