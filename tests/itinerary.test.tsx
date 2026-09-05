@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 
 const push = vi.fn();
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push }) }));
@@ -62,5 +64,14 @@ describe("20 Itinerary card", () => {
     render(<ItineraryPage />);
     await userEvent.click(await screen.findByRole("button", { name: "Set up my commute" }));
     expect(push).toHaveBeenCalledWith("/setup");
+  });
+});
+
+describe("20 operator tag — plain sentence case, not the leg-list eyebrow's uppercase", () => {
+  it("overrides .r .place .tl's uppercase for .mgd-legs specifically (PIXEL-AUDIT.md §20)", () => {
+    const css = readFileSync(resolve(__dirname, "../app/globals.css"), "utf8");
+    const rule = /\.mgd-legs \.r \.place \.tl\.mgd\s*\{([^}]*)\}/.exec(css)?.[1] ?? "";
+    expect(rule).toMatch(/text-transform:\s*none/);
+    expect(rule).toMatch(/letter-spacing:\s*0\.02em/);
   });
 });
