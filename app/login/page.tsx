@@ -7,9 +7,10 @@ import { ClearingSplash } from "@/components/clearing-splash";
 import { Cta } from "@/components/controls";
 import { FilmStrip } from "@/components/film-strip";
 import { formatNationalMobile, isValidMobile } from "@/lib/phone";
-import { sendOtp } from "@/app/login/actions";
+import { sendOtp, demoLogin } from "@/app/login/actions";
 
 const MODE_PHOTOS = ["/img/mode-metro.jpg", "/img/mode-bus.jpg", "/img/mode-auto.jpg", "/img/mode-walk.jpg"];
+const DEMO_PHONE_DISPLAY = "98123 45678";
 
 const ERROR_COPY: Record<string, string> = {
   invalid: "Enter a 10-digit mobile number.",
@@ -22,7 +23,21 @@ export default function LoginPage() {
   const [phone, setPhone] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [demoLoading, setDemoLoading] = useState(false);
   const valid = isValidMobile(phone);
+
+  async function onTryDemo() {
+    setDemoLoading(true);
+    const res = await demoLogin();
+    if (res.ok) {
+      router.push("/");
+      return;
+    }
+    // Fail closed, fail visibly: pre-fill the real test number so they can still get in by hand.
+    setDemoLoading(false);
+    setPhone(DEMO_PHONE_DISPLAY);
+    setError("send_failed");
+  }
 
   async function onContinue() {
     if (!valid) {
@@ -121,6 +136,12 @@ export default function LoginPage() {
           We&rsquo;ll send a one-time code to verify it.
           <br />
           By continuing you agree to the Terms and Privacy&nbsp;Policy.
+        </p>
+
+        <p style={{ textAlign: "center", marginTop: 20 }}>
+          <button className="linkbtn" type="button" onClick={onTryDemo} disabled={demoLoading}>
+            {demoLoading ? "Signing you in…" : "Just looking around? Try the demo"}
+          </button>
         </p>
       </div>
     </AppShell>
