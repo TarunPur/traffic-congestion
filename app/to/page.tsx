@@ -17,7 +17,9 @@ import { ARRIVE_DEFAULT, stepArrive, toHM, to12h } from "@/lib/arrive-by";
 const DEST_THUMB_CROP = { sxf: 0.18, syf: 0.1, swf: 0.5, shf: 0.52 };
 const DEST_THUMB_OPTIONS = { contrast: 1.9, max: 0.9 };
 function hasRealPhoto(name: string): boolean {
-  return name === "DLF Cyber Hub";
+  // The seeded place is "DLF Cyber Hub, Building 10" — a strict equality check against the
+  // shorter locked-mock name never matched (PIXEL-AUDIT.md's post-fix pass).
+  return name.startsWith("DLF Cyber Hub");
 }
 
 function highlight(name: string, q: string) {
