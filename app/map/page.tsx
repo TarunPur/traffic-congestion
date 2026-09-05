@@ -212,7 +212,7 @@ export default function SetOnMapPage() {
               />
               {fromQuery ? (
                 <button className="clr" type="button" aria-label="Clear from" onClick={clearFrom}>
-                  <Icon name="plus" size={15} className="rotate-45" />
+                  <Icon name="close" size={15} />
                 </button>
               ) : null}
             </div>

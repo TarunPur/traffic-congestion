@@ -107,7 +107,7 @@ export default function WhereToPage() {
           />
           {q ? (
             <button className="clear" type="button" aria-label="Clear" onClick={() => setQ("")}>
-              <Icon name="plus" size={16} className="rotate-45" />
+              <Icon name="close" size={16} />
             </button>
           ) : null}
         </span>
